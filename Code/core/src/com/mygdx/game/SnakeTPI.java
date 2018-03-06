@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.*;
 
 
 
@@ -36,6 +37,7 @@ public class SnakeTPI extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+
 		int height = Gdx.graphics.getHeight();
 		int width = Gdx.graphics.getWidth();
 		String rotation = Float.toString(spritehead.getRotation());
@@ -111,13 +113,13 @@ public class SnakeTPI extends ApplicationAdapter {
 				}
 			}
 
-            /*
+
             if (moveY >= Gdx.graphics.getHeight()) {
                 moveY = 0;
             }else {
                 moveY += 32;
                 spritehead.setRotation(0);
-            }*/
+            }
         }
 
 
@@ -135,5 +137,6 @@ public class SnakeTPI extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+
 	}
 }
