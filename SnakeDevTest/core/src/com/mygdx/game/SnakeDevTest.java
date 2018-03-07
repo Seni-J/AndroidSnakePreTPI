@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.files.*;
 import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -30,16 +31,11 @@ public class SnakeDevTest extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
-	Sprite arrow;
 
 	@Override
 	public void create () {
 		ScreenViewport viewport = new ScreenViewport();
 		stage = new Stage(viewport);
-
-		batch = new SpriteBatch();
-		arrow = new Sprite(new Texture("arrow_keys.png"));
-		arrow.setBounds(0,0, 100,100);
 
 
 		SnakeHead actor = new SnakeHead();
@@ -61,9 +57,6 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 		stage.draw();
 
-		batch.begin();
-		arrow.draw(batch);
-		batch.end();
 	}
 	
 	@Override
