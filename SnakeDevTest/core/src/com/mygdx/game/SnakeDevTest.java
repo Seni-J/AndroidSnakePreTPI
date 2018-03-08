@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.files.*;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -31,6 +33,9 @@ public class SnakeDevTest extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
+	SnakeHead actor;
+
+
 
 	@Override
 	public void create () {
@@ -38,7 +43,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 		stage = new Stage(viewport);
 
 
-		SnakeHead actor = new SnakeHead();
+		actor = new SnakeHead();
 		stage.addActor(actor);
 
 		Gdx.input.setInputProcessor(stage);
@@ -49,11 +54,31 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		//Gdx.app.log("Input OrgX?", Float.toString(actor.getOriginX()));
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.getBatch().begin();
 		stage.getBatch().draw(bg,0,0);
 		stage.getBatch().end();
+
+
+		BitmapFont font = new BitmapFont();
+
+
+
+		if(Gdx.input.getX() > actor.getX()){
+			actor.setPosition(actor.getX() + 1f, actor.getY());
+		}
+		if(Gdx.input.getX() < actor.getX()){
+			actor.setPosition(actor.getX() - 1f, actor.getY());
+		}
+		if(Gdx.input.getY() > actor.getY() && Gdx.input.getX() == actor.getX()){
+			actor.setPosition(actor.getX(),actor.getY() + 1f);
+		}
+		if(Gdx.input.getY() < actor.getY() && Gdx.input.getX() == actor.getX()){
+			actor.setPosition(actor.getX(),actor.getY() - 1f);
+		}
+
 
 		stage.draw();
 
@@ -63,4 +88,5 @@ public class SnakeDevTest extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 	}
+
 }

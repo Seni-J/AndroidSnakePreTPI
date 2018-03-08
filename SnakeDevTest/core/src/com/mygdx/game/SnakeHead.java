@@ -34,19 +34,17 @@ public class SnakeHead extends Actor {
     // End Variables //
 
     public SnakeHead(){
+        this.setOrigin(sprite.getWidth()/2,sprite.getHeight()/2);
         setBounds(sprite.getX(),sprite.getY(),sprite.getWidth(),sprite.getHeight());
         setTouchable(Touchable.enabled);
-
-        sprite.setScale(1f,1f);
+        sprite.setScale(.5f,.5f);
         sprite.rotate(-90);
+/*
+        Gdx.app.log("test X?", Float.toString(TouchPos.x));
 
         addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("Input x: ",Float.toString(x));
-                Gdx.app.log("touch on vector?: ",Float.toString(SnakeVector.x));
-                Gdx.app.log("touch on sprite?: ",Float.toString(sprite.getX()));
-                Gdx.app.log("button", Integer.toString(event.getButton()));
 
                 SnakeHead.this.clearActions();
                 if (x < sprite.getX()) {
@@ -63,12 +61,13 @@ public class SnakeHead extends Actor {
                     mba.setDuration(10f);
                     SnakeHead.this.addAction(mba);
                 }
+
                 return true;
             }
         });
 
+*/
     }
-
 
     @Override
     protected void positionChanged() {
