@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.files.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Author: Senistan Jegarajasingam
@@ -37,7 +40,9 @@ public class SnakeDevTest extends ApplicationAdapter {
 	Stage stage;
 	Texture bg;
 	SnakeHead actor;
-
+	Vector2 TouchPos;
+	Vector2 Cal;
+	Vector2 Cal2;
 
 	ImageButton arrowUp;
 	ImageButton arrowDown;
@@ -52,6 +57,12 @@ public class SnakeDevTest extends ApplicationAdapter {
 		stage = new Stage(viewport);
 
 		batch = new SpriteBatch();
+		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
+		Cal = new Vector2();
+		Cal2 = new Vector2();
+
+
+		// Beginning of the arrow keys code.
 		arrowUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_up.png"))));
 		arrowDown = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_down.png"))));
 		arrowLeft = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_left.png"))));
@@ -67,6 +78,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 		arrowLeft.setPosition(50,75);
 		arrowRight.setPosition(250,75);
 
+		// End of arrow keys code.
 
 		actor = new SnakeHead();
 		stage.addActor(actor);
@@ -92,6 +104,49 @@ public class SnakeDevTest extends ApplicationAdapter {
 		stage.getBatch().end();
 
 
+
+
+		if(Gdx.input.isTouched()){
+			//Gdx.app.log("Is Touched?", "YES");
+			//Gdx.app.log("Input X?", Float.toString(Gdx.input.getX()));
+			//Gdx.app.log("Input Y?", Float.toString(Gdx.input.getY()));
+
+
+			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
+
+			float xcal = actor.SnakeVector.x - TouchPos.x;
+			float ycal = actor.SnakeVector.y - TouchPos.y;
+
+			float dstx = Cal.dst(TouchPos.x,TouchPos.y,actor.getX(),actor.getY());
+			float dsty = Cal.dst(TouchPos.x,TouchPos.y,xcal,ycal);
+
+			float angle = MathUtils.sinDeg(dsty / dstx);
+
+			Gdx.app.log("Angle?", Float.toString(angle));
+			Gdx.app.log("dstX?", Float.toString(dstx));
+			Gdx.app.log("dstY?", Float.toString(dsty));
+
+
+			/*
+			float width = TouchPos.add(actor.SnakeVector).len(); // length of resultant vector
+			float angle = TouchPos.angle(); // and angle what you are looking for
+
+
+			Gdx.app.log("Distance", Float.toString(width));
+			Gdx.app.log("Angle", Float.toString(angle));*/
+		}
+
+
+
+		/**					Move with arrow keys
+		 * 	Image buttons have been added to move the snake's head.
+		 * **/
+
+		// Beginning of the arrow keys code.
+
+		if(arrowUp.isPressed() && arrowDown.isPressed()){
+			actor.setPosition(0,0);
+		}
 
 		if(arrowRight.isPressed() && actor.sprite.getRotation() != 90){
 			if(actor.sprite.getRotation() != -90){
@@ -132,6 +187,8 @@ public class SnakeDevTest extends ApplicationAdapter {
 				actor.setPosition(actor.getX() - 2f, actor.getY());
 			}
 		}
+
+		// End of arrow keys code.
 
 
 		stage.draw();

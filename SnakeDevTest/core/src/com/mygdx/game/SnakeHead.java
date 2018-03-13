@@ -27,7 +27,6 @@ public class SnakeHead extends Actor {
 
     Sprite sprite = new Sprite(new Texture("snake_head.png"));
     Vector2 SnakeVector = new Vector2(sprite.getX(),sprite.getY());
-    Vector2 TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 
 
     // End Variables //
@@ -38,6 +37,8 @@ public class SnakeHead extends Actor {
         setTouchable(Touchable.enabled);
         sprite.setScale(.5f,.5f);
         sprite.rotate(-90);
+
+
 /*
         Gdx.app.log("test X?", Float.toString(TouchPos.x));
 
