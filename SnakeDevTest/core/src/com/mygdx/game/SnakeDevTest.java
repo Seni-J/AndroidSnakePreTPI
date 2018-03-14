@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.files.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -22,6 +23,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.math.MathUtils;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.asin;
 
 /**
  * Author: Senistan Jegarajasingam
@@ -43,6 +47,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 	Vector2 TouchPos;
 	Vector2 Cal;
 	Vector2 Cal2;
+	ShapeRenderer shapeRenderer;
 
 	ImageButton arrowUp;
 	ImageButton arrowDown;
@@ -60,6 +65,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 		Cal = new Vector2();
 		Cal2 = new Vector2();
+		shapeRenderer = new ShapeRenderer();
 
 
 		// Beginning of the arrow keys code.
@@ -114,19 +120,58 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 
-			float xcal = actor.SnakeVector.x - TouchPos.x;
-			float ycal = actor.SnakeVector.y - TouchPos.y;
+			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;
+			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;
+			float angle = 0;
 
-			float dstx = Cal.dst(TouchPos.x,TouchPos.y,actor.getX(),actor.getY());
-			float dsty = Cal.dst(TouchPos.x,TouchPos.y,xcal,ycal);
+			float hyp = Cal.dst(xrecal,yrecal,TouchPos.x,stage.getHeight() - TouchPos.y);
 
-			float angle = MathUtils.sinDeg(dsty / dstx);
 
+
+			float oppX = abs(TouchPos.x - actor.SnakeVector.x);
+			float oppY = abs(stage.getHeight() - TouchPos.y - actor.SnakeVector.y);
+
+
+			if(TouchPos.x > xrecal && stage.getHeight() - TouchPos.y > yrecal) {
+				angle = (float) Math.toDegrees(Math.asin(oppX / hyp));
+			}
+			if(TouchPos.x < xrecal && stage.getHeight() - TouchPos.y < yrecal) {
+				angle = (float) Math.toDegrees(Math.asin(oppY / hyp));
+			}
+			if(TouchPos.x > xrecal && stage.getHeight() - TouchPos.y < yrecal) {
+				angle = (float) Math.toDegrees(Math.asin(oppX / hyp));
+			}
+			if(TouchPos.x < xrecal && stage.getHeight() - TouchPos.y > yrecal) {
+				angle = (float) Math.toDegrees(Math.asin(oppY / hyp));
+			}
+
+
+
+			batch.begin();
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+			shapeRenderer.setColor(1, 1, 0, 1);
+			shapeRenderer.line(xrecal, yrecal, TouchPos.x, stage.getHeight() - TouchPos.y);
+			shapeRenderer.end();
+			batch.end();
+
+			/*if(TouchPos.x > xrecal && stage.getHeight() - TouchPos.y > yrecal)
+			{
+				angle += 270;
+			}*/
+
+			actor.sprite.setRotation(angle);
 			Gdx.app.log("Angle?", Float.toString(angle));
-			Gdx.app.log("dstX?", Float.toString(dstx));
-			Gdx.app.log("dstY?", Float.toString(dsty));
+			Gdx.app.log("OppX?", Float.toString(oppX));
+			Gdx.app.log("Hyp?", Float.toString(hyp));
+/*
+			Gdx.app.log("Angle?", Float.toString(angle));
+			Gdx.app.log("hyp?", "Angle = arcsin ("+ Float.toString(hyp));
+			Gdx.app.log("SnakeX?", Float.toString(actor.SnakeVector.x));
+			Gdx.app.log("SnakeY?", Float.toString(actor.SnakeVector.y));
+			Gdx.app.log("SpriteOrX?", Float.toString(actor.sprite.getOriginX()));
+			Gdx.app.log("SpriteOrY?", Float.toString(actor.sprite.getOriginY()));
 
-
+*/
 			/*
 			float width = TouchPos.add(actor.SnakeVector).len(); // length of resultant vector
 			float angle = TouchPos.angle(); // and angle what you are looking for

@@ -32,7 +32,7 @@ public class SnakeHead extends Actor {
     // End Variables //
 
     public SnakeHead(){
-        this.setOrigin(sprite.getWidth()/2,sprite.getHeight()/2);
+        sprite.setOrigin(sprite.getWidth()/2,sprite.getHeight()/2);
         setBounds(sprite.getX(),sprite.getY(),sprite.getWidth(),sprite.getHeight());
         setTouchable(Touchable.enabled);
         sprite.setScale(.5f,.5f);
@@ -71,6 +71,7 @@ public class SnakeHead extends Actor {
 
     @Override
     protected void positionChanged() {
+        SnakeVector = new Vector2(getX(),getY());
         sprite.setPosition(getX(),getY());
         super.positionChanged();
     }
