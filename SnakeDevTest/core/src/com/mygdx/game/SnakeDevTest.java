@@ -24,8 +24,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.math.MathUtils;
 
+import static com.badlogic.gdx.math.MathUtils.cosDeg;
+import static com.badlogic.gdx.math.MathUtils.sinDeg;
 import static java.lang.Math.abs;
 import static java.lang.Math.asin;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 /**
  * Author: Senistan Jegarajasingam
@@ -45,14 +49,9 @@ public class SnakeDevTest extends ApplicationAdapter {
 	Texture bg;
 	SnakeHead actor;
 	Vector2 TouchPos;
-	Vector2 Cal;
-	Vector2 Cal2;
+	Vector2 target;
+	Vector2 speed;
 	ShapeRenderer shapeRenderer;
-
-	ImageButton arrowUp;
-	ImageButton arrowDown;
-	ImageButton arrowLeft;
-	ImageButton arrowRight;
 
 
 
@@ -63,36 +62,13 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-		Cal = new Vector2();
-		Cal2 = new Vector2();
 		shapeRenderer = new ShapeRenderer();
+		target = new Vector2();
+		speed = new Vector2();
 
-
-		// Beginning of the arrow keys code.
-		arrowUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_up.png"))));
-		arrowDown = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_down.png"))));
-		arrowLeft = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_left.png"))));
-		arrowRight = new ImageButton(new TextureRegionDrawable(new TextureRegion(new Texture("arrow_right.png"))));
-
-		arrowUp.setOrigin(arrowUp.getHeight()/2,arrowUp.getWidth()/2);
-		arrowDown.setOrigin(arrowDown.getHeight()/2,arrowDown.getWidth()/2);
-		arrowLeft.setOrigin(arrowLeft.getHeight()/2,arrowLeft.getWidth()/2);
-		arrowRight.setOrigin(arrowRight.getHeight()/2,arrowRight.getWidth()/2);
-
-		arrowUp.setPosition(150,150);
-		arrowDown.setPosition(150,0);
-		arrowLeft.setPosition(50,75);
-		arrowRight.setPosition(250,75);
-
-		// End of arrow keys code.
 
 		actor = new SnakeHead();
 		stage.addActor(actor);
-
-		stage.addActor(arrowUp);
-		stage.addActor(arrowDown);
-		stage.addActor(arrowLeft);
-		stage.addActor(arrowRight);
 
 		Gdx.input.setInputProcessor(stage);
 
@@ -113,127 +89,43 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 
 		if(Gdx.input.isTouched()){
-			//Gdx.app.log("Is Touched?", "YES");
-			//Gdx.app.log("Input X?", Float.toString(Gdx.input.getX()));
-			//Gdx.app.log("Input Y?", Float.toString(Gdx.input.getY()));
-
-
 			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 
-			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;
-			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;
+			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;	// Set the center of the sprite.
+			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;	// Set the center of the sprite.
 			float angle = 0;
 
-			float hyp = Cal.dst(xrecal,yrecal,TouchPos.x,stage.getHeight() - TouchPos.y);
 
+			target.set(TouchPos.x - xrecal, (stage.getHeight() - TouchPos.y) - yrecal); // Set the target vector for the angle.
 
+			angle = target.angle();	// Find the rotation angle for the sprite.
+			actor.sprite.setRotation(angle - 90);
 
-			float oppX = abs(TouchPos.x - actor.SnakeVector.x);
-			float oppY = abs(stage.getHeight() - TouchPos.y - actor.SnakeVector.y);
+			// LIBGDX WAY //
+			/*
+			speed.x = 1f * cosDeg(angle);	//Calculate Velocity for X.
+			speed.y = 1f * sinDeg(angle);	//Calculate Velocity for Y.
+			*/
 
+			// JAVA WAY //
+			speed.x = 1f * (float) cos(angle);	//Calculate Velocity for X.
+			speed.y = 1f * (float) sin(angle);	//Calculate Velocity for Y.
 
-			if(TouchPos.x > xrecal && stage.getHeight() - TouchPos.y > yrecal) {
-				angle = (float) Math.toDegrees(Math.asin(oppX / hyp));
-			}
-			if(TouchPos.x < xrecal && stage.getHeight() - TouchPos.y < yrecal) {
-				angle = (float) Math.toDegrees(Math.asin(oppY / hyp));
-			}
-			if(TouchPos.x > xrecal && stage.getHeight() - TouchPos.y < yrecal) {
-				angle = (float) Math.toDegrees(Math.asin(oppX / hyp));
-			}
-			if(TouchPos.x < xrecal && stage.getHeight() - TouchPos.y > yrecal) {
-				angle = (float) Math.toDegrees(Math.asin(oppY / hyp));
-			}
+			actor.moveBy(speed.x,speed.y);	// If the user still have his finger on the screen, the snake will still be moving.
 
-
-
+			/* // DRAWING LINE //
 			batch.begin();
 			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 			shapeRenderer.setColor(1, 1, 0, 1);
 			shapeRenderer.line(xrecal, yrecal, TouchPos.x, stage.getHeight() - TouchPos.y);
 			shapeRenderer.end();
 			batch.end();
-
-			/*if(TouchPos.x > xrecal && stage.getHeight() - TouchPos.y > yrecal)
-			{
-				angle += 270;
-			}*/
-
-			actor.sprite.setRotation(angle);
-			Gdx.app.log("Angle?", Float.toString(angle));
-			Gdx.app.log("OppX?", Float.toString(oppX));
-			Gdx.app.log("Hyp?", Float.toString(hyp));
-/*
-			Gdx.app.log("Angle?", Float.toString(angle));
-			Gdx.app.log("hyp?", "Angle = arcsin ("+ Float.toString(hyp));
-			Gdx.app.log("SnakeX?", Float.toString(actor.SnakeVector.x));
-			Gdx.app.log("SnakeY?", Float.toString(actor.SnakeVector.y));
-			Gdx.app.log("SpriteOrX?", Float.toString(actor.sprite.getOriginX()));
-			Gdx.app.log("SpriteOrY?", Float.toString(actor.sprite.getOriginY()));
-
-*/
-			/*
-			float width = TouchPos.add(actor.SnakeVector).len(); // length of resultant vector
-			float angle = TouchPos.angle(); // and angle what you are looking for
-
-
-			Gdx.app.log("Distance", Float.toString(width));
-			Gdx.app.log("Angle", Float.toString(angle));*/
+			*/
 		}
 
-
-
-		/**					Move with arrow keys
-		 * 	Image buttons have been added to move the snake's head.
-		 * **/
-
-		// Beginning of the arrow keys code.
-
-		if(arrowUp.isPressed() && arrowDown.isPressed()){
-			actor.setPosition(0,0);
+		if(!Gdx.input.isTouched()){
+			actor.moveBy(speed.x,speed.y);
 		}
-
-		if(arrowRight.isPressed() && actor.sprite.getRotation() != 90){
-			if(actor.sprite.getRotation() != -90){
-				actor.sprite.setRotation(-90);
-			}
-			actor.setPosition(actor.getX() + 2f, actor.getY());
-		}
-		if(arrowLeft.isPressed() && actor.sprite.getRotation() != -90){
-			if(actor.sprite.getRotation() != 90){
-				actor.sprite.setRotation(90);
-			}
-			actor.setPosition(actor.getX() - 2f, actor.getY());
-		}
-		if(arrowUp.isPressed() && actor.sprite.getRotation() != -180){
-			if(actor.sprite.getRotation() != 0){
-				actor.sprite.setRotation(0);
-			}
-			actor.setPosition(actor.getX(),actor.getY() + 2f);
-		}
-		if(arrowDown.isPressed() && actor.sprite.getRotation() != 0){
-			if(actor.sprite.getRotation() != -180){
-				actor.sprite.setRotation(-180);
-			}
-			actor.setPosition(actor.getX(),actor.getY() - 2f);
-		}
-
-		if(!arrowUp.isPressed() && !arrowDown.isPressed() && !arrowLeft.isPressed() && !arrowRight.isPressed()){
-			if(actor.sprite.getRotation() == -90){
-				actor.setPosition(actor.getX() + 2f, actor.getY());
-			}
-			if(actor.sprite.getRotation() == -180){
-				actor.setPosition(actor.getX(),actor.getY() - 2f);
-			}
-			if(actor.sprite.getRotation() == 0){
-				actor.setPosition(actor.getX(),actor.getY() + 2f);
-			}
-			if(actor.sprite.getRotation() == 90){
-				actor.setPosition(actor.getX() - 2f, actor.getY());
-			}
-		}
-
-		// End of arrow keys code.
 
 
 		stage.draw();

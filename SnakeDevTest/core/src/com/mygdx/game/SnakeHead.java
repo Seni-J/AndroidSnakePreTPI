@@ -37,36 +37,6 @@ public class SnakeHead extends Actor {
         setTouchable(Touchable.enabled);
         sprite.setScale(.5f,.5f);
         sprite.rotate(-90);
-
-
-/*
-        Gdx.app.log("test X?", Float.toString(TouchPos.x));
-
-        addListener(new InputListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-
-                SnakeHead.this.clearActions();
-                if (x < sprite.getX()) {
-                    MoveByAction mba = new MoveByAction();
-                    sprite.rotate(-180);
-                    mba.setAmount(-500f,0f);
-                    mba.setDuration(10f);
-                    SnakeHead.this.addAction(mba);
-                }
-                else if(x > sprite.getX()){
-                    MoveByAction mba = new MoveByAction();
-                    sprite.rotate(-180);
-                    mba.setAmount(500f,0f);
-                    mba.setDuration(10f);
-                    SnakeHead.this.addAction(mba);
-                }
-
-                return true;
-            }
-        });
-
-*/
     }
 
     @Override
