@@ -12,7 +12,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+
+import javax.swing.text.View;
 
 
 /**
@@ -27,7 +30,7 @@ public class SnakeHead extends Actor {
 
     Sprite sprite = new Sprite(new Texture("snake_head.png"));
     Vector2 SnakeVector = new Vector2(sprite.getX(),sprite.getY());
-
+    Viewport viewport = new ScreenViewport();
 
     // End Variables //
 

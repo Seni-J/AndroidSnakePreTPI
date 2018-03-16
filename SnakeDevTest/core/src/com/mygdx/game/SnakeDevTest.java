@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.math.MathUtils;
@@ -34,7 +35,7 @@ import static java.lang.Math.sin;
 /**
  * Author: Senistan Jegarajasingam
  * Project Name: Android Snake Pré-TPI
- * Last update date: 06.03.2018
+ * Last update date: 16.03.2018
  *
  * Description: Make a snake game on Android. The gameplay is pretty different from the original snake.
  * The snake car move around freely without any restriction (can move in diagonal i.e.).
@@ -47,28 +48,38 @@ public class SnakeDevTest extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
+
 	SnakeHead actor;
+	Apple actorApple;
+	Array positions;
+
 	Vector2 TouchPos;
 	Vector2 target;
 	Vector2 speed;
+
 	ShapeRenderer shapeRenderer;
+	ScreenViewport viewport;
 
 
 
 	@Override
 	public void create () {
-		ScreenViewport viewport = new ScreenViewport();
+		viewport = new ScreenViewport();
+		shapeRenderer = new ShapeRenderer();
 		stage = new Stage(viewport);
 
 		batch = new SpriteBatch();
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-		shapeRenderer = new ShapeRenderer();
 		target = new Vector2();
 		speed = new Vector2();
+		positions = new Array();
 
 
 		actor = new SnakeHead();
+		actorApple = new Apple();
+		stage.addActor(actorApple);
 		stage.addActor(actor);
+
 
 		Gdx.input.setInputProcessor(stage);
 
@@ -90,6 +101,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 		if(Gdx.input.isTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
+			//positions.add(TouchPos.x,TouchPos.y); // Array to add positions.
 
 			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;	// Set the center of the sprite.
 			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;	// Set the center of the sprite.
@@ -102,15 +114,15 @@ public class SnakeDevTest extends ApplicationAdapter {
 			actor.sprite.setRotation(angle - 90);
 
 			// LIBGDX WAY //
-			/*
 			speed.x = 1f * cosDeg(angle);	//Calculate Velocity for X.
 			speed.y = 1f * sinDeg(angle);	//Calculate Velocity for Y.
-			*/
+
 
 			// JAVA WAY //
+			/*
 			speed.x = 1f * (float) cos(angle);	//Calculate Velocity for X.
 			speed.y = 1f * (float) sin(angle);	//Calculate Velocity for Y.
-
+			*/
 			actor.moveBy(speed.x,speed.y);	// If the user still have his finger on the screen, the snake will still be moving.
 
 			/* // DRAWING LINE //
@@ -124,9 +136,8 @@ public class SnakeDevTest extends ApplicationAdapter {
 		}
 
 		if(!Gdx.input.isTouched()){
-			actor.moveBy(speed.x,speed.y);
+			actor.moveBy(speed.x % viewport.getScreenWidth(),speed.y);
 		}
-
 
 		stage.draw();
 
