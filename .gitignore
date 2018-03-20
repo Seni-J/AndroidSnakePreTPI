@@ -100,7 +100,7 @@ Thumbs.db
 libgdx-*.zip
 libgdx-*.zip.MD5
 
-/.idea/
+Code/.idea/
 
 #core & extension libs/ folders that have no 3rd party dependencies in them
 /gdx/libs
