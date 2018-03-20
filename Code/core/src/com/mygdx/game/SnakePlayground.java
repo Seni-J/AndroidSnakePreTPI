@@ -50,6 +50,7 @@ public class SnakePlayground extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
+	//test merge
 
 	SnakeHead actor;
 	Apple actorApple;
