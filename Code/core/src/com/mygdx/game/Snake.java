@@ -44,7 +44,7 @@ import static java.lang.Math.sin;
  * */
 
 
-public class SnakeDevTest extends ApplicationAdapter {
+public class Snake extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
