@@ -39,6 +39,7 @@ captures/
 .idea/gradle.xml
 .idea/dictionaries
 .idea/libraries
+Code/.idea/
 
 # Keystore files
 *.jks
@@ -100,7 +101,7 @@ Thumbs.db
 libgdx-*.zip
 libgdx-*.zip.MD5
 
-Code/.idea/
+
 
 #core & extension libs/ folders that have no 3rd party dependencies in them
 /gdx/libs
