@@ -99,9 +99,11 @@ public class SnakeDevTest extends ApplicationAdapter {
 
 
 
-		if(Gdx.input.isTouched()){
+		if(Gdx.input.justTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-			//positions.add(TouchPos.x,TouchPos.y); // Array to add positions.
+			positions.add(TouchPos.x,TouchPos.y); // Array to add positions.
+
+			Gdx.app.log("Positions: ", positions.first().toString());
 
 			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;	// Set the center of the sprite.
 			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;	// Set the center of the sprite.
@@ -123,6 +125,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 			speed.x = 1f * (float) cos(angle);	//Calculate Velocity for X.
 			speed.y = 1f * (float) sin(angle);	//Calculate Velocity for Y.
 			*/
+
 			actor.moveBy(speed.x,speed.y);	// If the user still have his finger on the screen, the snake will still be moving.
 
 			/* // DRAWING LINE //
@@ -136,7 +139,7 @@ public class SnakeDevTest extends ApplicationAdapter {
 		}
 
 		if(!Gdx.input.isTouched()){
-			actor.moveBy(speed.x % viewport.getScreenWidth(),speed.y);
+			actor.moveBy(speed.x,speed.y);
 		}
 
 		stage.draw();
