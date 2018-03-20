@@ -2503,6 +2503,7 @@
         <option value="$PROJECT_DIR$/core/src/com/mygdx/game/SnakeHead.java" />
         <option value="$PROJECT_DIR$/android/src/com/mygdx/game/AndroidLauncher.java" />
         <option value="$PROJECT_DIR$/core/src/com/mygdx/game/SnakePlayground.java" />
+        <option value="$PROJECT_DIR$/android/src/com/mygdx/game/AndroidLauncher.java" />
       </list>
     </option>
   </component>
@@ -2583,6 +2584,8 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="device.picker.selection" value="c16079c0a2da9af" />
     <property name="android.profiler.active" value="true" />
+    <property name="android.project.structure.last.selected" value="android" />
+    <property name="android.project.structure.proportion" value="0.15" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
