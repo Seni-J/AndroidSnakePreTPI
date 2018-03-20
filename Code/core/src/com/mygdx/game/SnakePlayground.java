@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.math.MathUtils;
 
+import java.awt.geom.Arc2D;
+
 import static com.badlogic.gdx.math.MathUtils.cosDeg;
 import static com.badlogic.gdx.math.MathUtils.sinDeg;
 import static java.lang.Math.abs;
@@ -34,7 +36,7 @@ import static java.lang.Math.sin;
 
 /**
  * Author: Senistan Jegarajasingam
- * Project Name: Android Snake Pré-TPI
+ * Project Name: Android SnakePlayground Pré-TPI
  * Last update date: 16.03.2018
  *
  * Description: Make a snake game on Android. The gameplay is pretty different from the original snake.
@@ -44,7 +46,7 @@ import static java.lang.Math.sin;
  * */
 
 
-public class Snake extends ApplicationAdapter {
+public class SnakePlayground extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
@@ -90,7 +92,6 @@ public class Snake extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		//Gdx.app.log("Input OrgX?", Float.toString(actor.getOriginX()));
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.getBatch().begin();
@@ -119,29 +120,37 @@ public class Snake extends ApplicationAdapter {
 			// LIBGDX WAY //
 			speed.x = 1f * cosDeg(angle);	//Calculate Velocity for X.
 			speed.y = 1f * sinDeg(angle);	//Calculate Velocity for Y.
+		}
 
+		actor.moveBy(speed.x,speed.y);
 
-			// JAVA WAY //
-			/*
-			speed.x = 1f * (float) cos(angle);	//Calculate Velocity for X.
-			speed.y = 1f * (float) sin(angle);	//Calculate Velocity for Y.
-			*/
+		float moduloX = actor.getX() % viewport.getScreenWidth();
+		float moduloY =  actor.getY() % viewport.getScreenHeight();
+		if (moduloX < 0)
+		{
+			moduloX += viewport.getScreenWidth();
+		}
+		if (moduloY < 0)
+		{
+			moduloY += viewport.getScreenHeight();
+		}
+		actor.setX(moduloX);
+		actor.setY(moduloY);
 
-			actor.moveBy(speed.x,speed.y);	// If the user still have his finger on the screen, the snake will still be moving.
-
-			/* // DRAWING LINE //
+		 // DRAWING LINE //
 			batch.begin();
 			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 			shapeRenderer.setColor(1, 1, 0, 1);
-			shapeRenderer.line(xrecal, yrecal, TouchPos.x, stage.getHeight() - TouchPos.y);
+			shapeRenderer.line((float) viewport.getScreenX(),(float) viewport.getScreenY(),actor.getX() + actor.getWidth() /2,actor.getY() + actor.getHeight() /2);
 			shapeRenderer.end();
 			batch.end();
-			*/
-		}
 
-		if(!Gdx.input.isTouched()){
-			actor.moveBy(speed.x,speed.y);
-		}
+
+
+		Gdx.app.log("X: ", Float.toString(actor.getX()));
+		Gdx.app.log("Y: ", Float.toString(actor.getY()));
+		Gdx.app.log("Modulo X: ", Float.toString(moduloX));
+		Gdx.app.log("Modulo Y: ", Float.toString(moduloY));
 
 		stage.draw();
 
