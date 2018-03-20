@@ -95,7 +95,7 @@ public class SnakePlayground extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.getBatch().begin();
-		stage.getBatch().draw(bg,0,0);
+		stage.getBatch().draw(bg,0,0,viewport.getWorldWidth(),viewport.getWorldHeight());
 		stage.getBatch().end();
 
 
@@ -105,7 +105,7 @@ public class SnakePlayground extends ApplicationAdapter {
 			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 			positions.add(TouchPos.x,TouchPos.y); // Array to add positions.
 
-			Gdx.app.log("Positions: ", positions.first().toString());
+			Gdx.app.log("Positions", positions.first().toString());
 
 			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;	// Set the center of the sprite.
 			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;	// Set the center of the sprite.
@@ -118,14 +118,17 @@ public class SnakePlayground extends ApplicationAdapter {
 			actor.sprite.setRotation(angle - 90);
 
 			// LIBGDX WAY //
-			speed.x = 1f * cosDeg(angle);	//Calculate Velocity for X.
-			speed.y = 1f * sinDeg(angle);	//Calculate Velocity for Y.
+			speed.x = 1.5f * cosDeg(angle);	//Calculate Velocity for X.
+			speed.y = 1.5f * sinDeg(angle);	//Calculate Velocity for Y.
 		}
 
 		actor.moveBy(speed.x,speed.y);
 
+		// Calculate modulo for Snake's head when he goes out of the screen so he can come back from the opposite side.
 		float moduloX = actor.getX() % viewport.getScreenWidth();
 		float moduloY =  actor.getY() % viewport.getScreenHeight();
+
+		// Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
 		if (moduloX < 0)
 		{
 			moduloX += viewport.getScreenWidth();
@@ -134,23 +137,19 @@ public class SnakePlayground extends ApplicationAdapter {
 		{
 			moduloY += viewport.getScreenHeight();
 		}
+
 		actor.setX(moduloX);
 		actor.setY(moduloY);
 
-		 // DRAWING LINE //
+
+		/*		 // DRAWING LINE //
 			batch.begin();
 			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 			shapeRenderer.setColor(1, 1, 0, 1);
 			shapeRenderer.line((float) viewport.getScreenX(),(float) viewport.getScreenY(),actor.getX() + actor.getWidth() /2,actor.getY() + actor.getHeight() /2);
 			shapeRenderer.end();
 			batch.end();
-
-
-
-		Gdx.app.log("X: ", Float.toString(actor.getX()));
-		Gdx.app.log("Y: ", Float.toString(actor.getY()));
-		Gdx.app.log("Modulo X: ", Float.toString(moduloX));
-		Gdx.app.log("Modulo Y: ", Float.toString(moduloY));
+		*/
 
 		stage.draw();
 
