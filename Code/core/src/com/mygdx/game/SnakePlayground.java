@@ -2,37 +2,18 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.files.*;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.math.MathUtils;
-
-import java.awt.geom.Arc2D;
 
 import static com.badlogic.gdx.math.MathUtils.cosDeg;
 import static com.badlogic.gdx.math.MathUtils.sinDeg;
 import static java.lang.Math.abs;
-import static java.lang.Math.asin;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 
 /**
  * Author: Senistan Jegarajasingam
@@ -50,15 +31,12 @@ public class SnakePlayground extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
-	//test merge
 
-	SnakeHead actor;
-	Apple actorApple;
+	SnakeHead snakeHead;
+	Apple apple;
 	Array positions;
 
 	Vector2 TouchPos;
-	Vector2 target;
-	Vector2 speed;
 
 	ShapeRenderer shapeRenderer;
 	ScreenViewport viewport;
@@ -73,15 +51,13 @@ public class SnakePlayground extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-		target = new Vector2();
-		speed = new Vector2();
 		positions = new Array();
 
 
-		actor = new SnakeHead();
-		actorApple = new Apple();
-		stage.addActor(actorApple);
-		stage.addActor(actor);
+		snakeHead = new SnakeHead();
+		apple = new Apple();
+		stage.addActor(apple);
+		stage.addActor(snakeHead);
 
 
 		Gdx.input.setInputProcessor(stage);
@@ -98,35 +74,29 @@ public class SnakePlayground extends ApplicationAdapter {
 		stage.getBatch().draw(bg,0,0,viewport.getWorldWidth(),viewport.getWorldHeight());
 		stage.getBatch().end();
 
-
-
-
 		if(Gdx.input.justTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 			positions.add(TouchPos.x,TouchPos.y); // Array to add positions.
 
 			Gdx.app.log("Positions", positions.first().toString());
 
-			float xrecal = actor.SnakeVector.x + actor.getWidth() /2;	// Set the center of the sprite.
-			float yrecal = actor.SnakeVector.y + actor.getHeight() /2;	// Set the center of the sprite.
-			float angle = 0;
-
-
-			target.set(TouchPos.x - xrecal, (stage.getHeight() - TouchPos.y) - yrecal); // Set the target vector for the angle.
-
-			angle = target.angle();	// Find the rotation angle for the sprite.
-			actor.sprite.setRotation(angle - 90);
-
-			// LIBGDX WAY //
-			speed.x = 1.5f * cosDeg(angle);	//Calculate Velocity for X.
-			speed.y = 1.5f * sinDeg(angle);	//Calculate Velocity for Y.
+			snakeHead.Move(TouchPos.x,TouchPos.y,stage); // Use the method to move from the class SnakeHead
 		}
 
-		actor.moveBy(speed.x,speed.y);
+		snakeHead.moveBy(snakeHead.speedX(),snakeHead.speedY());
+
+		if(snakeHead.SnakeVector.x == TouchPos.x && snakeHead.SnakeVector.y == TouchPos.y){
+			Gdx.app.log("I have reached", "The Objective.");
+		}
+		/*Gdx.app.log("Sub Vector X: ", Float.toString(snakeHead.SnakeVector.sub(TouchPos).x));
+		Gdx.app.log("Sub Vector Y: ", Float.toString(snakeHead.SnakeVector.sub(TouchPos).y));*/
+		if(TouchPos.sub(snakeHead.SnakeVector).x == 0 && TouchPos.sub(snakeHead.SnakeVector).y == 0){
+			Gdx.app.log("I have reached", "The Objective.");
+		}
 
 		// Calculate modulo for Snake's head when he goes out of the screen so he can come back from the opposite side.
-		float moduloX = actor.getX() % viewport.getScreenWidth();
-		float moduloY =  actor.getY() % viewport.getScreenHeight();
+		float moduloX = snakeHead.getX() % viewport.getScreenWidth();
+		float moduloY =  snakeHead.getY() % viewport.getScreenHeight();
 
 		// Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
 		if (moduloX < 0)
@@ -138,15 +108,15 @@ public class SnakePlayground extends ApplicationAdapter {
 			moduloY += viewport.getScreenHeight();
 		}
 
-		actor.setX(moduloX);
-		actor.setY(moduloY);
+		snakeHead.setX(moduloX);
+		snakeHead.setY(moduloY);
 
 
 		/*		 // DRAWING LINE //
 			batch.begin();
 			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 			shapeRenderer.setColor(1, 1, 0, 1);
-			shapeRenderer.line((float) viewport.getScreenX(),(float) viewport.getScreenY(),actor.getX() + actor.getWidth() /2,actor.getY() + actor.getHeight() /2);
+			shapeRenderer.line((float) viewport.getScreenX(),(float) viewport.getScreenY(),snakeHead.getX() + snakeHead.getWidth() /2,snakeHead.getY() + snakeHead.getHeight() /2);
 			shapeRenderer.end();
 			batch.end();
 		*/
