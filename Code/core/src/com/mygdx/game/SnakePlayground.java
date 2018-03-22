@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.lang.annotation.Target;
+
 import static com.badlogic.gdx.math.MathUtils.cosDeg;
 import static com.badlogic.gdx.math.MathUtils.sinDeg;
 import static java.lang.Math.abs;
@@ -31,10 +33,11 @@ public class SnakePlayground extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
+	int i = 0;
 
 	SnakeHead snakeHead;
 	Apple apple;
-	Array positions;
+	Array<Vector2> coordinates;
 
 	Vector2 TouchPos;
 
@@ -51,7 +54,15 @@ public class SnakePlayground extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-		positions = new Array();
+		coordinates = new Array<Vector2>();
+		coordinates.add(new Vector2(800,800));
+		coordinates.add(new Vector2(650,400));
+		coordinates.add(new Vector2(930,110));
+		coordinates.add(new Vector2(120,760));
+		coordinates.add(new Vector2(1,1));
+		coordinates.add(new Vector2(530,230));
+		coordinates.add(new Vector2(150,160));
+		coordinates.add(new Vector2(1200,790));
 
 
 		snakeHead = new SnakeHead();
@@ -59,6 +70,7 @@ public class SnakePlayground extends ApplicationAdapter {
 		stage.addActor(apple);
 		stage.addActor(snakeHead);
 
+		snakeHead.NewTarget(coordinates.get(i).x,coordinates.get(i).y);
 
 		Gdx.input.setInputProcessor(stage);
 
@@ -74,43 +86,28 @@ public class SnakePlayground extends ApplicationAdapter {
 		stage.getBatch().draw(bg,0,0,viewport.getWorldWidth(),viewport.getWorldHeight());
 		stage.getBatch().end();
 
+
+		if(snakeHead.TargetReached() == true){
+			if(coordinates.get(i) == coordinates.peek()){
+				Gdx.app.log("All coordinates have been reached",".");
+			}else{
+				i += 1;
+				snakeHead.NewTarget(coordinates.get(i).x, coordinates.get(i).y);
+				Gdx.app.log("Coordinate",Integer.toString(i) + "has been reached.");
+			}
+		}
+			/*
 		if(Gdx.input.justTouched()){
-			TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-			positions.add(TouchPos.x,TouchPos.y); // Array to add positions.
+			TouchPos = new Vector2(Gdx.input.getX(),stage.getHeight() - Gdx.input.getY());
+			coordinates.add(TouchPos); // Array to add positions.
 
-			Gdx.app.log("Positions", positions.first().toString());
-
-			snakeHead.Move(TouchPos.x,TouchPos.y,stage); // Use the method to move from the class SnakeHead
+			Gdx.app.log("Target", coordinates.first().toString());
+			snakeHead.NewTarget(TouchPos.x,TouchPos.y);
 		}
+*/
+		snakeHead.Move(stage);
 
-		snakeHead.moveBy(snakeHead.speedX(),snakeHead.speedY());
-
-		if(snakeHead.SnakeVector.x == TouchPos.x && snakeHead.SnakeVector.y == TouchPos.y){
-			Gdx.app.log("I have reached", "The Objective.");
-		}
-		/*Gdx.app.log("Sub Vector X: ", Float.toString(snakeHead.SnakeVector.sub(TouchPos).x));
-		Gdx.app.log("Sub Vector Y: ", Float.toString(snakeHead.SnakeVector.sub(TouchPos).y));*/
-		if(TouchPos.sub(snakeHead.SnakeVector).x == 0 && TouchPos.sub(snakeHead.SnakeVector).y == 0){
-			Gdx.app.log("I have reached", "The Objective.");
-		}
-
-		// Calculate modulo for Snake's head when he goes out of the screen so he can come back from the opposite side.
-		float moduloX = snakeHead.getX() % viewport.getScreenWidth();
-		float moduloY =  snakeHead.getY() % viewport.getScreenHeight();
-
-		// Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
-		if (moduloX < 0)
-		{
-			moduloX += viewport.getScreenWidth();
-		}
-		if (moduloY < 0)
-		{
-			moduloY += viewport.getScreenHeight();
-		}
-
-		snakeHead.setX(moduloX);
-		snakeHead.setY(moduloY);
-
+		//Gdx.app.log("Target Reached: ", Boolean.toString(snakeHead.TargetReached()));
 
 		/*		 // DRAWING LINE //
 			batch.begin();
