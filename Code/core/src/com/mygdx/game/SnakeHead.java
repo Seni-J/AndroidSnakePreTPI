@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.utils.Align;
+
+import java.awt.geom.Arc2D;
 
 
 /**
@@ -29,8 +32,8 @@ public class SnakeHead extends Actor {
     public SnakeHead(){
         sprite.setOrigin(sprite.getWidth()/2,sprite.getHeight()/2);
         setBounds(sprite.getX(),sprite.getY(),sprite.getWidth(),sprite.getHeight());
-        this.setX(200);
-        this.setY(200);
+        this.setX(620);
+        this.setY(400);
         sprite.setScale(.5f,.5f);
         sprite.rotate(-90);
         NewTarget(snakeVector.x + 100, snakeVector.y);
@@ -63,8 +66,8 @@ public class SnakeHead extends Actor {
         delta.sub(snakeVector);
         float dt = delta.len();
 
-        speed.x = linearSpeed /dt * delta.x * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed /dt * delta.y * Gdx.graphics.getDeltaTime();
+        speed.x = linearSpeed /dt * delta.x  * Gdx.graphics.getDeltaTime();
+        speed.y = linearSpeed /dt * delta.y  * Gdx.graphics.getDeltaTime();
 
         this.sprite.setRotation(speed.angle()-90);
 
@@ -85,6 +88,8 @@ public class SnakeHead extends Actor {
 
     @Override
     protected void positionChanged() {
+        /*float x = getX() - sprite.getWidth()/2;
+        float y = getY() - sprite.getHeight()/2;*/
         snakeVector = new Vector2(getX(),getY());
         sprite.setPosition(getX(),getY());
         super.positionChanged();

@@ -16,10 +16,22 @@ public class SnakeTail extends Actor{
     // Variables //
     Sprite sprite = new Sprite(new Texture("snake_body.png"));
 
-    public SnakeTail(){
+
+    public SnakeTail(float headX,float headY){
         sprite.setScale(.5f,.5f);
+        sprite.setPosition(headX -45,headY + 5);
+    }
+
+    public void TargetCoordReached(){
 
     }
+
+    @Override
+    protected void positionChanged() {
+        sprite.setPosition(getX() -45,getY() + 5);
+        super.positionChanged();
+    }
+
     public void draw(Batch batch, float parentAlpha) {
         sprite.draw(batch);
     }
