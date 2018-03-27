@@ -27,7 +27,7 @@ public class SnakeTail extends Actor{
         sprite.setPosition(headX -45,headY + 5);
     }
 
-    public TailMove(float coordX,float coordY){
+    public void TailMove(float coordX,float coordY){
         targetTail.x = coordX;
         targetTail.y = coordY;
 
