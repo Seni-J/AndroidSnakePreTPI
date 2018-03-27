@@ -11,10 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.lang.annotation.Target;
-
-import static com.badlogic.gdx.math.MathUtils.cosDeg;
-import static com.badlogic.gdx.math.MathUtils.sinDeg;
 import static java.lang.Math.abs;
 
 /**
@@ -39,7 +35,7 @@ public class SnakePlayground extends ApplicationAdapter {
 	SnakeTail snakeTail;
 	Apple apple;
 
-	Array<Vector2> coordinates;
+	Array<Vector2> coordinatesSnake;
 
 	Vector2 TouchPos;
 
@@ -56,7 +52,7 @@ public class SnakePlayground extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-		coordinates = new Array<Vector2>();
+		coordinatesSnake = new Array<Vector2>();
 
 		snakeHead = new SnakeHead();
 		snakeTail = new SnakeTail(snakeHead.getX(),snakeHead.getY());
@@ -83,14 +79,14 @@ public class SnakePlayground extends ApplicationAdapter {
 
 		if(Gdx.input.justTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),stage.getHeight() - Gdx.input.getY());
-			coordinates.add(snakeHead.snakeVector); // Array to add positions.
+			coordinatesSnake.add(snakeHead.snakeVector); // Array to add positions.
 			snakeHead.NewTarget(TouchPos.x,TouchPos.y);
 		}
 /*
 		if(snakeHead.TargetReached()){
-			if(coordinates.get(i) != coordinates.peek()){
+			if(coordinatesSnake.get(i) != coordinatesSnake.peek()){
 				i += 1;
-				snakeHead.NewTarget(coordinates.get(i).x, coordinates.get(i).y);
+				snakeHead.NewTarget(coordinatesSnake.get(i).x, coordinatesSnake.get(i).y);
 				Gdx.app.log("Coordinate",Integer.toString(i) + "has been reached.");
 			}
 		}
