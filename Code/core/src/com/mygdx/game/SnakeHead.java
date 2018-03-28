@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.Align;
@@ -21,7 +22,7 @@ public class SnakeHead extends Actor {
 
     // Variables //
     Sprite sprite = new Sprite(new Texture("snake_head.png"));
-    Vector2 snakeVector = new Vector2(sprite.getX(),sprite.getY());
+    Vector2 snakeVector = new Vector2((int) sprite.getX(),(int) sprite.getY());
     Vector2 target = new Vector2();
     Vector2 speed = new Vector2();
     float linearSpeed = 150f;
@@ -71,7 +72,7 @@ public class SnakeHead extends Actor {
 
         this.sprite.setRotation(speed.angle()-90);
 
-        Gdx.app.log("New target:", Float.toString(target.x) + ","+ Float.toString(target.y));
+        Gdx.app.log("New target Head:", Float.toString(target.x) + ","+ Float.toString(target.y));
     }
 
     public boolean TargetReached(){
@@ -88,9 +89,7 @@ public class SnakeHead extends Actor {
 
     @Override
     protected void positionChanged() {
-        /*float x = getX() - sprite.getWidth()/2;
-        float y = getY() - sprite.getHeight()/2;*/
-        snakeVector = new Vector2(getX(),getY());
+        snakeVector = new Vector2((int) getX(),(int) getY());
         sprite.setPosition(getX(),getY());
         super.positionChanged();
     }

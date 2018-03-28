@@ -80,7 +80,20 @@ public class SnakePlayground extends ApplicationAdapter {
 		if(Gdx.input.justTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),stage.getHeight() - Gdx.input.getY());
 			coordinatesSnake.add(snakeHead.snakeVector); // Array to add positions.
+			if(coordinatesSnake.size == 0){
+				snakeTail.TailTarget(coordinatesSnake.get(i).x,coordinatesSnake.get(i).y);
+			}
 			snakeHead.NewTarget(TouchPos.x,TouchPos.y);
+		}
+
+		if(coordinatesSnake.size != 0) {
+			if (snakeTail.TargetCoordReached()) {
+				if (coordinatesSnake.get(i) != coordinatesSnake.peek()) {
+					i += 1;
+					snakeTail.TailTarget(coordinatesSnake.get(i).x, coordinatesSnake.get(i).y);
+					Gdx.app.log("Reached", "ok");
+				}
+			}
 		}
 /*
 		if(snakeHead.TargetReached()){
@@ -92,6 +105,7 @@ public class SnakePlayground extends ApplicationAdapter {
 		}
 */
 		snakeHead.Move(stage);
+		snakeTail.MoveTail(stage);
 /*
 		// DRAWING LINE //
 			batch.begin();
