@@ -4,25 +4,24 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.utils.Align;
-
-import java.awt.geom.Arc2D;
 
 
 /**
  * Created by Senistan Jegarajasingam on 06.03.2018.
- * Description: Class for the snake's head.
+ * Description: Class for the snake's head and body.
  *
  */
 
-public class SnakeHead extends Actor {
+public class SnakePart extends Actor {
 
     // Variables //
-    Sprite sprite = new Sprite(new Texture("snake_head.png"));
-    Vector2 snakeVector = new Vector2((int) sprite.getX(),(int) sprite.getY());
+    Sprite sprite;
+    Sprite snakeHead = new Sprite(new Texture("snake_head.png"));
+    Sprite snakeBody = new Sprite(new Texture("snake_body.png"));
+    Vector2 snakeVector = new Vector2(snakeHead.getX(), snakeHead.getY());
+    int targcoor = 0;
     Vector2 target = new Vector2();
     Vector2 speed = new Vector2();
     float linearSpeed = 150f;
@@ -30,14 +29,18 @@ public class SnakeHead extends Actor {
     float moduloY;
     // End Variables //
 
-    public SnakeHead(){
-        sprite.setOrigin(sprite.getWidth()/2,sprite.getHeight()/2);
-        setBounds(sprite.getX(),sprite.getY(),sprite.getWidth(),sprite.getHeight());
-        this.setX(620);
-        this.setY(400);
-        sprite.setScale(.5f,.5f);
+    public SnakePart(Sprite sprite){
+        this.sprite = sprite;
+        sprite.setScale(.5f);
         sprite.rotate(-90);
-        NewTarget(snakeVector.x + 100, snakeVector.y);
+        /*this.setX(620);
+        this.setY(400);*/
+        /*snakeHead.setOrigin(snakeHead.getWidth()/2, snakeHead.getHeight()/2);
+        setBounds(snakeHead.getX(), snakeHead.getY(), snakeHead.getWidth(), snakeHead.getHeight());
+
+        snakeHead.setScale(.5f,.5f);
+        snakeHead.rotate(-90);
+        NewTarget(snakeVector.x + 100, snakeVector.y);*/
     }
 
     // Moving Method for the snake's head.
@@ -59,9 +62,9 @@ public class SnakeHead extends Actor {
         this.setY(moduloY);
     }
 
-    public void NewTarget(float X, float Y){
-        target.x = X;
-        target.y = Y;
+    public void NewTarget(){
+        target.x = SnakePlayground.coordinatesSnake.get(targcoor).x;
+        target.y = SnakePlayground.coordinatesSnake.get(targcoor).y;
 
         Vector2 delta = target.cpy();
         delta.sub(snakeVector);
@@ -83,13 +86,14 @@ public class SnakeHead extends Actor {
         if(Math.abs(deltaAngle) < 2) {
             return false;
         }else{
+            targcoor += 1;
             return true;
         }
     }
 
     @Override
     protected void positionChanged() {
-        snakeVector = new Vector2((int) getX(),(int) getY());
+        snakeVector = new Vector2(getX(), getY());
         sprite.setPosition(getX(),getY());
         super.positionChanged();
     }

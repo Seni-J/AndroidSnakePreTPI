@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -11,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import static java.lang.Math.abs;
 
 /**
  * Author: Senistan Jegarajasingam
@@ -31,11 +31,13 @@ public class SnakePlayground extends ApplicationAdapter {
 	Texture bg;
 	int i = 0;
 
-	SnakeHead snakeHead;
-	SnakeTail snakeTail;
-	Apple apple;
+	static public Array<Vector2> coordinatesSnake;
+	private Array<SnakePart> snake;
 
-	Array<Vector2> coordinatesSnake;
+	Sprite snakeHead;
+	Sprite snakeBody;
+
+	Apple apple;
 
 	Vector2 TouchPos;
 
@@ -51,17 +53,29 @@ public class SnakePlayground extends ApplicationAdapter {
 		stage = new Stage(viewport);
 
 		batch = new SpriteBatch();
+		snakeHead = new Sprite(new Texture("snake_head.png"));
+		snakeBody = new Sprite(new Texture("snake_body.png"));
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-		coordinatesSnake = new Array<Vector2>();
 
-		snakeHead = new SnakeHead();
-		snakeTail = new SnakeTail(snakeHead.getX(),snakeHead.getY());
+		coordinatesSnake = new Array<Vector2>();
+		coordinatesSnake.add(new Vector2(620,400));
+		coordinatesSnake.add(new Vector2(340,800));
+		coordinatesSnake.add(new Vector2(720,140));
+		snake = new Array<SnakePart>();
+
+		//add snake's head and one tail
+		SnakePart snakePartHead = new SnakePart(snakeHead);
+		snake.insert(0,snakePartHead);
+		SnakePart snakePartBody = new SnakePart(snakeBody);
+		snake.insert(1,snakePartBody);
+		snake.get(1).setPosition(snake.get(0).getX() - 45,snake.get(0).getY() + 5);
+
 		apple = new Apple();
+		stage.addActor(snakePartBody);
+		stage.addActor(snakePartHead);
+
 
 		stage.addActor(apple);
-		stage.addActor(snakeHead);
-		stage.addActor(snakeTail);
-
 
 		Gdx.input.setInputProcessor(stage);
 
@@ -77,35 +91,19 @@ public class SnakePlayground extends ApplicationAdapter {
 		stage.getBatch().draw(bg,0,0,viewport.getWorldWidth(),viewport.getWorldHeight());
 		stage.getBatch().end();
 
+
 		if(Gdx.input.justTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),stage.getHeight() - Gdx.input.getY());
-			coordinatesSnake.add(snakeHead.snakeVector); // Array to add positions.
-			if(coordinatesSnake.size == 0){
-				snakeTail.TailTarget(coordinatesSnake.get(i).x,coordinatesSnake.get(i).y);
-			}
-			snakeHead.NewTarget(TouchPos.x,TouchPos.y);
+			coordinatesSnake.add(snake.get(0).snakeVector); // Array to add positions.
+			//snake.get(0).NewTarget();
 		}
 
-		if(coordinatesSnake.size != 0) {
-			if (snakeTail.TargetCoordReached()) {
-				if (coordinatesSnake.get(i) != coordinatesSnake.peek()) {
-					i += 1;
-					snakeTail.TailTarget(coordinatesSnake.get(i).x, coordinatesSnake.get(i).y);
-					Gdx.app.log("Reached", "ok");
-				}
-			}
+		for(SnakePart snakePart : snake){
+			snakePart.Move(stage);
+			snakePart.NewTarget();
+			snakePart.TargetReached();
 		}
-/*
-		if(snakeHead.TargetReached()){
-			if(coordinatesSnake.get(i) != coordinatesSnake.peek()){
-				i += 1;
-				snakeHead.NewTarget(coordinatesSnake.get(i).x, coordinatesSnake.get(i).y);
-				Gdx.app.log("Coordinate",Integer.toString(i) + "has been reached.");
-			}
-		}
-*/
-		snakeHead.Move(stage);
-		snakeTail.MoveTail(stage);
+
 /*
 		// DRAWING LINE //
 			batch.begin();

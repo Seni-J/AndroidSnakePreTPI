@@ -17,9 +17,9 @@ public class SnakeTail extends Actor{
 
     // Variables //
     Sprite sprite = new Sprite(new Texture("snake_body.png"));
+    Vector2 tailVector = new Vector2(sprite.getX(),sprite.getY());
     Vector2 targetTail = new Vector2();
     Vector2 speed = new Vector2();
-    Vector2 tailVector = new Vector2(sprite.getX(),sprite.getY());
     float linearSpeed = 150f;
     float moduloX;
     float moduloY;
@@ -81,7 +81,7 @@ public class SnakeTail extends Actor{
 
     @Override
     protected void positionChanged() {
-        tailVector = new Vector2((int) getX(),(int) getY());
+        tailVector = new Vector2(getX(), getY());
         sprite.setPosition(getX(),getY());
         super.positionChanged();
     }
