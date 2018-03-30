@@ -58,14 +58,12 @@ public class SnakePlayground extends ApplicationAdapter {
 		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
 
 		coordinatesSnake = new Array<Vector2>();
-		coordinatesSnake.add(new Vector2(620,400));
-		coordinatesSnake.add(new Vector2(340,800));
-		coordinatesSnake.add(new Vector2(720,140));
 		snake = new Array<SnakePart>();
 
 		//add snake's head and one tail
 		SnakePart snakePartHead = new SnakePart(snakeHead);
 		snake.insert(0,snakePartHead);
+		snake.get(0).setPosition(600,420);
 		SnakePart snakePartBody = new SnakePart(snakeBody);
 		snake.insert(1,snakePartBody);
 		snake.get(1).setPosition(snake.get(0).getX() - 45,snake.get(0).getY() + 5);
@@ -95,13 +93,24 @@ public class SnakePlayground extends ApplicationAdapter {
 		if(Gdx.input.justTouched()){
 			TouchPos = new Vector2(Gdx.input.getX(),stage.getHeight() - Gdx.input.getY());
 			coordinatesSnake.add(snake.get(0).snakeVector); // Array to add positions.
-			//snake.get(0).NewTarget();
+			snake.get(0).NewTargetHead(TouchPos.x,TouchPos.y);
 		}
 
 		for(SnakePart snakePart : snake){
-			snakePart.Move(stage);
-			snakePart.NewTarget();
-			snakePart.TargetReached();
+			if(!snakePart.sprite.equals(snakeHead)) {
+				snakePart.Move(stage);
+				if(coordinatesSnake.size != 0) {
+					if (snakePart.TargetReached()) {
+						Gdx.app.log("Target", "Reached");
+						snakePart.NewTarget();
+					}
+				}
+			}else{
+				snakePart.MoveHead(stage);
+				/*if(snakePart.TargetReachedHead()){
+				}*/
+			}
+
 		}
 
 /*
