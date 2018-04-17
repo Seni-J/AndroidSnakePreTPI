@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.*;
 /**
  * Created by Senistan Jegarajasingam on 06.03.2018.
  * Description: Class for the snake's head and body.
- *
  */
 
 public class SnakePart extends Actor {
@@ -24,80 +23,57 @@ public class SnakePart extends Actor {
     Rectangle bounds = new Rectangle();
     Vector2 target = new Vector2();
     Vector2 speed = new Vector2();
-    Vector2 targetHead = new Vector2();
-    Vector2 speedHead = new Vector2();
     float linearSpeed = 150f;
     float moduloX;
     float moduloY;
     float frozen;
     // End Variables //
 
-    public SnakePart(Sprite sprite){
-        this.sprite = sprite;
-        setBounds(this.sprite.getX(),this.sprite.getY(),this.sprite.getWidth(),this.sprite.getHeight());
-        snakeVector = new Vector2(this.sprite.getX(),this.sprite.getY());
-        frozen = 300;
+    public SnakePart(String partType, float x, float y) {
+        this.sprite = new Sprite(new Texture(partType + ".png"));
+        setBounds(x, y, this.sprite.getWidth(), this.sprite.getHeight());
+        snakeVector = new Vector2(this.sprite.getX(), this.sprite.getY());
+        frozen = 50;
         sprite.setScale(.5f);
         sprite.rotate(-90);
     }
 
     // Moving Method for the snake's head.
-    public void Move(Stage stage){
-        if(frozen <= 0){
+    public void Move(Stage stage) {
+        if (frozen <= 0) {
             this.moveBy(speed.x, speed.y);
 
             moduloX = this.getX() % stage.getWidth();
             moduloY = this.getY() % stage.getHeight();
             // Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
-            if (moduloX < 0)
-            {
+            if (moduloX < 0) {
                 moduloX += stage.getWidth();
             }
-            if (moduloY < 0)
-            {
+            if (moduloY < 0) {
                 moduloY += stage.getHeight();
             }
             this.setX(moduloX);
             this.setY(moduloY);
-        }else{
+        } else {
             frozen--;
-            Gdx.app.log("frozen timer", Float.toString(frozen));
         }
     }
 
-    public void MoveHead(Stage stage){
-        this.moveBy(speedHead.x, speedHead.y);
+    public void NewTarget() {
+        target.x = SnakePlayground.coordinatesSnake.get(targcoor).x;
+        target.y = SnakePlayground.coordinatesSnake.get(targcoor).y;
 
-        moduloX = this.getX() % stage.getWidth();
-        moduloY = this.getY() % stage.getHeight();
-        // Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
-        if (moduloX < 0)
-        {
-            moduloX += stage.getWidth();
-        }
-        if (moduloY < 0)
-        {
-            moduloY += stage.getHeight();
-        }
-        this.setX(moduloX);
-        this.setY(moduloY);
+        Vector2 delta = target.cpy();
+        delta.sub(snakeVector);
+        float dt = delta.len();
+
+        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
+        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
+
+        this.sprite.setRotation(speed.angle() - 90);
     }
 
-    public void NewTarget(){
-            target.x = SnakePlayground.coordinatesSnake.get(targcoor).x;
-            target.y = SnakePlayground.coordinatesSnake.get(targcoor).y;
-
-            Vector2 delta = target.cpy();
-            delta.sub(snakeVector);
-            float dt = delta.len();
-
-            speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
-            speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
-
-            this.sprite.setRotation(speed.angle() - 90);
-    }
-
-    public void FollowHead(float SnakeHeadX,float SnakeHeadY){
+    public void FollowHead(float SnakeHeadX, float SnakeHeadY) {
         target.x = SnakeHeadX;
         target.y = SnakeHeadY;
 
@@ -111,22 +87,7 @@ public class SnakePart extends Actor {
         this.sprite.setRotation(speed.angle() - 90);
     }
 
-    public void NewTargetHead(float TouchX, float TouchY){
-        targetHead.x = TouchX;
-        targetHead.y = TouchY;
-
-        Vector2 deltaHead = targetHead.cpy();
-        deltaHead.sub(snakeVector);
-        float dt = deltaHead.len();
-
-        speedHead.x = linearSpeed /dt * deltaHead.x  * Gdx.graphics.getDeltaTime();
-        speedHead.y = linearSpeed /dt * deltaHead.y  * Gdx.graphics.getDeltaTime();
-
-        this.sprite.setRotation(speedHead.angle()-90);
-    }
-
-
-    public void NoNewTarget(float SnakeHeadX,float SnakeHeadY){
+    public void NoNewTarget(float SnakeHeadX, float SnakeHeadY) {
         target.x = SnakeHeadX;
         target.y = SnakeHeadY;
 
@@ -134,48 +95,49 @@ public class SnakePart extends Actor {
         delta.sub(snakeVector);
         float dt = delta.len();
 
-        speed.x = linearSpeed /dt * delta.x  * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed /dt * delta.y  * Gdx.graphics.getDeltaTime();
+        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
+        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
 
-        this.sprite.setRotation(speed.angle()-90);
+        this.sprite.setRotation(speed.angle() - 90);
     }
 
-/*
-    public boolean TargetReachedHead(){
-        Vector2 deltaHead = targetHead.cpy();
-        deltaHead.sub(snakeVector);
-        float deltaAngle = deltaHead.angle() - speedHead.angle();
+    /*
+        public boolean TargetReachedHead(){
+            Vector2 deltaHead = targetHead.cpy();
+            deltaHead.sub(snakeVector);
+            float deltaAngle = deltaHead.angle() - speedHead.angle();
 
-        if(Math.abs(deltaAngle) < 2) {
-            return false;
-        }else{
-            return true;
+            if(Math.abs(deltaAngle) < 2) {
+                return false;
+            }else{
+                return true;
+            }
         }
-    }
-*/
-    public boolean TargetReached(){
+    */
+    public boolean TargetReached() {
         Vector2 delta = target.cpy();
         delta.sub(snakeVector);
         float deltaAngle = delta.angle() - speed.angle();
 
-        if(Math.abs(deltaAngle) < 2) {
+        if (Math.abs(deltaAngle) < 2) {
             return false;
-        }else{
-            if(SnakePlayground.coordinatesSnake.get(targcoor) != SnakePlayground.coordinatesSnake.peek()){
+        } else {
+            if (SnakePlayground.coordinatesSnake.get(targcoor) != SnakePlayground.coordinatesSnake.peek()) {
                 targcoor += 1;
             }
             return true;
         }
     }
 
-    public Rectangle getBounds(){
-        bounds = new Rectangle(this.sprite.getX(),this.sprite.getY(),this.sprite.getWidth(),this.sprite.getHeight());
+    public Rectangle getBounds() {
+        bounds = new Rectangle(this.sprite.getX(), this.sprite.getY(), this.sprite.getWidth(), this.sprite.getHeight());
         return bounds;
     }
+
     @Override
     protected void positionChanged() {
         snakeVector = new Vector2(getX(), getY());
-        sprite.setPosition(getX(),getY());
+        sprite.setPosition(getX(), getY());
         super.positionChanged();
     }
 
@@ -183,7 +145,7 @@ public class SnakePart extends Actor {
         sprite.draw(batch);
     }
 
-    public void act(float delta){
+    public void act(float delta) {
         super.act(delta);
     }
 
