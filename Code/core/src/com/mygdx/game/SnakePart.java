@@ -21,13 +21,13 @@ public class SnakePart extends Actor {
     Vector2 snakeVector = new Vector2();
     static int targcoor = 0;
     Rectangle bounds = new Rectangle();
-    Vector2 target = new Vector2();
-    Vector2 speed = new Vector2();
     float linearSpeed = 150f;
     float moduloX;
     float moduloY;
     float frozen;
     // End Variables //
+
+    public boolean TargetReached;
 
     public SnakePart(String partType, float x, float y) {
         this.sprite = new Sprite(new Texture(partType + ".png"));
@@ -40,8 +40,26 @@ public class SnakePart extends Actor {
 
     // Moving Method for the snake's head.
     public void Move(Stage stage) {
+        float speedX;
+        float speedY;
+        float targetX;
+        float targetY;
+
         if (frozen <= 0) {
-            this.moveBy(speed.x, speed.y);
+            targetX = SnakePlayground.coordinatesSnake.get(targcoor).x;
+            targetY = SnakePlayground.coordinatesSnake.get(targcoor).y;
+
+            Vector2 delta =  new Vector2(targetX,targetY);
+            Vector2 snakePartVector = new Vector2(this.getX(),this.getY());
+            delta.sub(snakePartVector);
+            float dt = delta.len();
+
+            speedX = linearSpeed / dt * delta.x;
+            speedY = linearSpeed / dt * delta.y;
+
+            this.sprite.setRotation(new Vector2(speedX,speedY).angle() - 90);
+
+            this.moveBy(speedX * Gdx.graphics.getDeltaTime(), speedY * Gdx.graphics.getDeltaTime());
 
             moduloX = this.getX() % stage.getWidth();
             moduloY = this.getY() % stage.getHeight();
@@ -54,25 +72,17 @@ public class SnakePart extends Actor {
             }
             this.setX(moduloX);
             this.setY(moduloY);
+
+            //if(quadrant(this.getX(),this.getY()) == 2);
         } else {
             frozen--;
         }
     }
 
-    public void NewTarget() {
-        target.x = SnakePlayground.coordinatesSnake.get(targcoor).x;
-        target.y = SnakePlayground.coordinatesSnake.get(targcoor).y;
-
-        Vector2 delta = target.cpy();
-        delta.sub(snakeVector);
-        float dt = delta.len();
-
-        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
-
-        this.sprite.setRotation(speed.angle() - 90);
+    public void NewTarget(int i) {
+        targcoor = i;
     }
-
+/*
     public void FollowHead(float SnakeHeadX, float SnakeHeadY) {
         target.x = SnakeHeadX;
         target.y = SnakeHeadY;
@@ -101,7 +111,7 @@ public class SnakePart extends Actor {
         this.sprite.setRotation(speed.angle() - 90);
     }
 
-    /*
+
         public boolean TargetReachedHead(){
             Vector2 deltaHead = targetHead.cpy();
             deltaHead.sub(snakeVector);
@@ -114,19 +124,10 @@ public class SnakePart extends Actor {
             }
         }
     */
-    public boolean TargetReached() {
-        Vector2 delta = target.cpy();
-        delta.sub(snakeVector);
-        float deltaAngle = delta.angle() - speed.angle();
 
-        if (Math.abs(deltaAngle) < 2) {
-            return false;
-        } else {
-            if (SnakePlayground.coordinatesSnake.get(targcoor) != SnakePlayground.coordinatesSnake.peek()) {
-                targcoor += 1;
-            }
-            return true;
-        }
+    public void NextTarget(){
+        targcoor++;
+        NewTarget(targcoor);
     }
 
     public Rectangle getBounds() {
@@ -147,6 +148,22 @@ public class SnakePart extends Actor {
 
     public void act(float delta) {
         super.act(delta);
+    }
+
+    public int quadrant(double x, double y) {
+        if(x > 0 && y > 0)
+            return 1;
+
+        if(x < 0 && y > 0)
+            return 2;
+
+        if(x < 0 && y < 0)
+            return 3;
+
+        if(x > 0 && y < 0)
+            return 4;
+
+        return 0;
     }
 
 }

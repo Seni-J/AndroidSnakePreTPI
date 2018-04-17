@@ -17,114 +17,113 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
  * Author: Senistan Jegarajasingam
  * Project Name: Android SnakePlayground Pré-TPI
  * Last update date: 16.03.2018
- *
+ * <p>
  * Description: Make a snake game on Android. The gameplay is pretty different from the original snake.
  * The snake car move around freely without any restriction (can move in diagonal i.e.).
  * This class is the main where I call all my other classes.
- *
- * */
+ */
 
 
 public class SnakePlayground extends ApplicationAdapter {
-	SpriteBatch batch;
-	Stage stage;
-	Texture bg;
-	int i = 2;
+    SpriteBatch batch;
+    Stage stage;
+    Texture bg;
+    int i = 2;
 
-	static public Array<Vector2> coordinatesSnake;
-	private Array<SnakePart> snake;
+    static public Array<Vector2> coordinatesSnake;
+    private Array<SnakePart> snake;
 
-	Sprite snakeHead;
-	Sprite snakeBody;
+    Sprite snakeHead;
+    Sprite snakeBody;
 
-	Apple apple;
+    Apple apple;
 
-	Vector2 TouchPos;
+    Vector2 TouchPos;
 
-	ShapeRenderer shapeRenderer;
-	ScreenViewport viewport;
-
-
-
-	@Override
-	public void create () {
-		viewport = new ScreenViewport();
-		shapeRenderer = new ShapeRenderer();
-		stage = new Stage(viewport);
-
-		batch = new SpriteBatch();
-		snakeHead = new Sprite(new Texture("snake_head.png"));
-		snakeBody = new Sprite(new Texture("snake_body.png"));
-		TouchPos = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-
-		coordinatesSnake = new Array<Vector2>();
-		snake = new Array<SnakePart>();
-		apple = new Apple();
-
-		//add snake's head and one tail
-		SnakePart snakePartHead = new SnakePart("snake_head",600,420);
-
-		snake.insert(0,snakePartHead);
-		snakePartHead.frozen = 0;
-		SnakePart snakePartBody = new SnakePart("snake_body",555,420);
-		snakePartBody.frozen = 0;
-		snake.insert(1,snakePartBody);
-
-		stage.addActor(apple);
-		stage.addActor(snakePartBody);
-		stage.addActor(snakePartHead);
+    ShapeRenderer shapeRenderer;
+    ScreenViewport viewport;
 
 
-		Gdx.input.setInputProcessor(stage);
+    @Override
+    public void create() {
+        viewport = new ScreenViewport();
+        shapeRenderer = new ShapeRenderer();
+        stage = new Stage(viewport);
 
-		bg = new Texture("grass_bg.jpg");
+        batch = new SpriteBatch();
+        TouchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 
-	}
+        coordinatesSnake = new Array<Vector2>();
+        coordinatesSnake.add(new Vector2(1000, 420));
+        snake = new Array<SnakePart>();
+        apple = new Apple();
 
-	@Override
-	public void render () {
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		stage.act(Gdx.graphics.getDeltaTime());
-		stage.getBatch().begin();
-		stage.getBatch().draw(bg,0,0,viewport.getWorldWidth(),viewport.getWorldHeight());
-		stage.getBatch().end();
+        //add snake's head and one tail
+        SnakePart snakePartHead = new SnakePart("snake_head", 600, 420);
+
+        snake.insert(0, snakePartHead);
+        snakePartHead.frozen = 0;
+        snakePartHead.NewTarget(0);
+        SnakePart snakePartBody = new SnakePart("snake_body", 555, 420);
+        snakePartBody.frozen = 0;
+        snakePartBody.NewTarget(0);
+        snake.insert(1, snakePartBody);
+
+        stage.addActor(apple);
+        stage.addActor(snakePartBody);
+        stage.addActor(snakePartHead);
 
 
-		if(Gdx.input.justTouched()){
-			TouchPos = new Vector2(Gdx.input.getX(),stage.getHeight() - Gdx.input.getY());
-			coordinatesSnake.add(snake.get(0).snakeVector); // Array to add positions.
-			snake.get(0).NewTarget();
-		}
+        Gdx.input.setInputProcessor(stage);
+
+        bg = new Texture("grass_bg.jpg");
+
+    }
+
+    @Override
+    public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.getBatch().begin();
+        stage.getBatch().draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+        stage.getBatch().end();
+
+        Gdx.app.log("Array:",coordinatesSnake.toString());
 
 
+        if (Gdx.input.justTouched()) {
+            coordinatesSnake.get(coordinatesSnake.size - 1).set(snake.get(0).getX(),snake.get(0).getY());
+            TouchPos = new Vector2(Gdx.input.getX(), stage.getHeight() - Gdx.input.getY());
+            coordinatesSnake.add(TouchPos); // Array to add positions.
+            snake.get(0).NewTarget(coordinatesSnake.size - 1);
+        }
 
 
-		for(SnakePart snakePart : snake){
-			if(!snakePart.sprite.equals(snakeHead)) {
-				snakePart.Move(stage);
-				if(coordinatesSnake.size != 0) {
-					if (snakePart.TargetReached()) {
-						if(coordinatesSnake.peek() != coordinatesSnake.get(SnakePart.targcoor)) {
-							snakePart.NewTarget();
-						}else{
-							snakePart.FollowHead(snakeHead.getX(),snakeHead.getY());
-						}
-					}
-				}
-			}else{
-				if (snakePart.getBounds().overlaps(apple.getBounds())) {
-					Gdx.app.log("I touch the apple","!!!");
-					SnakePart snakePartBody = new SnakePart("snake_body",snake.get(snake.size-1).getX(), snake.get(snake.size-1).getY());
-					snake.add(snakePartBody);
-					apple.PlaceApple();
-					Gdx.app.log("snake index size", Integer.toString(snake.size));
-				}
-				snakePart.Move(stage);
-				/*if(snakePart.TargetReachedHead()){
+        boolean isHead = true;
+
+        for (SnakePart snakePart : snake) {
+            if (!isHead) {
+                snakePart.Move(stage);
+                //if (snakePart.TargetReached()) {
+                    snakePart.NextTarget();
+                    //snakePart.FollowHead(snakeHead.getX(),snakeHead.getY());
+
+                //}
+            } else {
+                if (snakePart.getBounds().overlaps(apple.getBounds())) {
+                    Gdx.app.log("I touch the apple", "!!!");
+                    SnakePart snakePartBody = new SnakePart("snake_body", snake.get(snake.size - 1).getX(), snake.get(snake.size - 1).getY());
+                    snake.add(snakePartBody);
+                    apple.PlaceApple();
+                    Gdx.app.log("snake index size", Integer.toString(snake.size));
+                }
+                snakePart.Move(stage);
+                isHead = false;
+                /*if(snakePart.TargetReachedHead()){
 				}*/
-			}
+            }
 
-		}
+        }
 
 
 
@@ -138,13 +137,13 @@ public class SnakePlayground extends ApplicationAdapter {
 			batch.end();
 */
 
-		stage.draw();
+        stage.draw();
 
-	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-	}
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+    }
 
 }
