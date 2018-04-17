@@ -29,7 +29,7 @@ public class SnakePlayground extends ApplicationAdapter {
 	SpriteBatch batch;
 	Stage stage;
 	Texture bg;
-	int i = 0;
+	int i = 2;
 
 	static public Array<Vector2> coordinatesSnake;
 	private Array<SnakePart> snake;
@@ -59,21 +59,21 @@ public class SnakePlayground extends ApplicationAdapter {
 
 		coordinatesSnake = new Array<Vector2>();
 		snake = new Array<SnakePart>();
+		apple = new Apple();
 
 		//add snake's head and one tail
 		SnakePart snakePartHead = new SnakePart(snakeHead);
 		snake.insert(0,snakePartHead);
 		snake.get(0).setPosition(600,420);
 		SnakePart snakePartBody = new SnakePart(snakeBody);
+		snakePartBody.frozen = 0;
 		snake.insert(1,snakePartBody);
 		snake.get(1).setPosition(snake.get(0).getX() - 45,snake.get(0).getY() + 5);
 
-		apple = new Apple();
+		stage.addActor(apple);
 		stage.addActor(snakePartBody);
 		stage.addActor(snakePartHead);
 
-
-		stage.addActor(apple);
 
 		Gdx.input.setInputProcessor(stage);
 
@@ -96,22 +96,37 @@ public class SnakePlayground extends ApplicationAdapter {
 			snake.get(0).NewTargetHead(TouchPos.x,TouchPos.y);
 		}
 
+
+
+
 		for(SnakePart snakePart : snake){
 			if(!snakePart.sprite.equals(snakeHead)) {
 				snakePart.Move(stage);
 				if(coordinatesSnake.size != 0) {
 					if (snakePart.TargetReached()) {
-						Gdx.app.log("Target", "Reached");
-						snakePart.NewTarget();
+						if(coordinatesSnake.peek() != coordinatesSnake.get(SnakePart.targcoor)) {
+							snakePart.NewTarget();
+						}else{
+							snakePart.FollowHead(snakeHead.getX(),snakeHead.getY());
+						}
 					}
 				}
 			}else{
+				Gdx.app.log("snake index size", Integer.toString(snake.size));
+				if (snakePart.getBounds().overlaps(apple.getBounds())) {
+					Gdx.app.log("I touch the apple","!!!");
+					SnakePart snakePartBody = new SnakePart(new Sprite(new Texture("snake_body.png")));
+					snake.add(snakePartBody);
+					apple.PlaceApple();
+				}
 				snakePart.MoveHead(stage);
 				/*if(snakePart.TargetReachedHead()){
 				}*/
 			}
 
 		}
+
+
 
 /*
 		// DRAWING LINE //
