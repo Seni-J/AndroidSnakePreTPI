@@ -18,12 +18,12 @@ public class SnakePart extends Actor {
 
     // Variables //
     Sprite sprite;
-    Sprite snakeHead = new Sprite(new Texture("snake_head.png"));
-    Sprite snakeBody = new Sprite(new Texture("snake_body.png"));
-    Vector2 snakeVector = new Vector2(snakeHead.getX(), snakeHead.getY());
+    Vector2 snakeVector = new Vector2();
     int targcoor = 0;
     Vector2 target = new Vector2();
     Vector2 speed = new Vector2();
+    Vector2 targetHead = new Vector2();
+    Vector2 speedHead = new Vector2();
     float linearSpeed = 150f;
     float moduloX;
     float moduloY;
@@ -31,6 +31,7 @@ public class SnakePart extends Actor {
 
     public SnakePart(Sprite sprite){
         this.sprite = sprite;
+        snakeVector = new Vector2(this.sprite.getX(),this.sprite.getY());
         sprite.setScale(.5f);
         sprite.rotate(-90);
         /*this.setX(620);
@@ -45,7 +46,26 @@ public class SnakePart extends Actor {
 
     // Moving Method for the snake's head.
     public void Move(Stage stage){
-        this.moveBy(speed.x,speed.y);
+        this.moveBy(speed.x, speed.y);
+
+
+        moduloX = this.getX() % stage.getWidth();
+        moduloY = this.getY() % stage.getHeight();
+        // Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
+        if (moduloX < 0)
+        {
+            moduloX += stage.getWidth();
+        }
+        if (moduloY < 0)
+        {
+            moduloY += stage.getHeight();
+        }
+        this.setX(moduloX);
+        this.setY(moduloY);
+    }
+
+    public void MoveHead(Stage stage){
+        this.moveBy(speedHead.x, speedHead.y);
 
         moduloX = this.getX() % stage.getWidth();
         moduloY = this.getY() % stage.getHeight();
@@ -75,7 +95,35 @@ public class SnakePart extends Actor {
 
         this.sprite.setRotation(speed.angle()-90);
 
-        Gdx.app.log("New target Head:", Float.toString(target.x) + ","+ Float.toString(target.y));
+        //Gdx.app.log("New target Head:", Float.toString(target.x) + ","+ Float.toString(target.y));
+    }
+
+    public void NewTargetHead(float TouchX, float TouchY){
+        targetHead.x = TouchX;
+        targetHead.y = TouchY;
+
+        Vector2 deltaHead = targetHead.cpy();
+        deltaHead.sub(snakeVector);
+        float dt = deltaHead.len();
+
+        speedHead.x = linearSpeed /dt * deltaHead.x  * Gdx.graphics.getDeltaTime();
+        speedHead.y = linearSpeed /dt * deltaHead.y  * Gdx.graphics.getDeltaTime();
+
+        this.sprite.setRotation(speedHead.angle()-90);
+
+        //Gdx.app.log("New target Head:", Float.toString(targetHead.x) + ","+ Float.toString(targetHead.y));
+    }
+
+    public boolean TargetReachedHead(){
+        Vector2 deltaHead = targetHead.cpy();
+        deltaHead.sub(snakeVector);
+        float deltaAngle = deltaHead.angle() - speedHead.angle();
+
+        if(Math.abs(deltaAngle) < 2) {
+            return false;
+        }else{
+            return true;
+        }
     }
 
     public boolean TargetReached(){
@@ -86,7 +134,12 @@ public class SnakePart extends Actor {
         if(Math.abs(deltaAngle) < 2) {
             return false;
         }else{
-            targcoor += 1;
+            if(SnakePlayground.coordinatesSnake.get(targcoor) != SnakePlayground.coordinatesSnake.peek()){
+                targcoor += 1;
+            }else{
+                speed.x = speedHead.x;
+                speed.y = speedHead.y;
+            }
             return true;
         }
     }
