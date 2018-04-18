@@ -59,12 +59,12 @@ public class SnakePlayground extends ApplicationAdapter {
         apple = new Apple();
 
         //add snake's head and one tail
-        SnakePart snakePartHead = new SnakePart("snake_head", 600, 420);
+        SnakePart snakePartHead = new SnakePart("snake_head", 200, 420);
 
         snake.insert(0, snakePartHead);
         snakePartHead.frozen = 0;
         snakePartHead.NewTarget(0);
-        SnakePart snakePartBody = new SnakePart("snake_body", 555, 420);
+        SnakePart snakePartBody = new SnakePart("snake_body", 155, 420);
         snakePartBody.frozen = 0;
         snakePartBody.NewTarget(0);
         snake.insert(1, snakePartBody);
@@ -92,7 +92,10 @@ public class SnakePlayground extends ApplicationAdapter {
 
 
         if (Gdx.input.justTouched()) {
-            coordinatesSnake.get(coordinatesSnake.size - 1).set(snake.get(0).getX(),snake.get(0).getY());
+            coordinatesSnake.get(coordinatesSnake.size - 1).set(snake.get(0).getX(),snake.get(0).getY()); // all parts of the body have to go to where the head is now
+            for (SnakePart part : snake) // Redefine targets for the parts that did not have one
+                if (part.targcoor < 0)
+                    part.targcoor = coordinatesSnake.size - 1;
             TouchPos = new Vector2(Gdx.input.getX(), stage.getHeight() - Gdx.input.getY());
             coordinatesSnake.add(TouchPos); // Array to add positions.
             snake.get(0).NewTarget(coordinatesSnake.size - 1);
@@ -104,18 +107,12 @@ public class SnakePlayground extends ApplicationAdapter {
         for (SnakePart snakePart : snake) {
             if (!isHead) {
                 snakePart.Move(stage);
-                //if (snakePart.TargetReached()) {
-                    snakePart.NextTarget();
-                    //snakePart.FollowHead(snakeHead.getX(),snakeHead.getY());
-
-                //}
             } else {
                 if (snakePart.getBounds().overlaps(apple.getBounds())) {
-                    Gdx.app.log("I touch the apple", "!!!");
+                    Gdx.app.log("SNAKE", "I touch the apple");
                     SnakePart snakePartBody = new SnakePart("snake_body", snake.get(snake.size - 1).getX(), snake.get(snake.size - 1).getY());
                     snake.add(snakePartBody);
                     apple.PlaceApple();
-                    Gdx.app.log("snake index size", Integer.toString(snake.size));
                 }
                 snakePart.Move(stage);
                 isHead = false;
