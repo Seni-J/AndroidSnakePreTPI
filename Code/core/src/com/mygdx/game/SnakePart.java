@@ -42,14 +42,11 @@ public class SnakePart extends Actor {
     public void Move(Stage stage) {
         float targetX;
         float targetY;
-        int quad; // The quadrant in which the part is, compared to its target
 
         if (frozen <= 0) {
-            if (targcoor >= 0) { // Compute speed according on target
+            if (targcoor >= 0) { // Compute speed according to target
                 targetX = SnakePlayground.coordinatesSnake.get(targcoor).x;
                 targetY = SnakePlayground.coordinatesSnake.get(targcoor).y;
-
-                quad = quadrant(this.getX(), this.getY(), targetX, targetY); // quadrant before move
 
                 Vector2 delta = new Vector2(targetX, targetY);
                 Vector2 snakePartVector = new Vector2(this.getX(), this.getY());
@@ -59,6 +56,7 @@ public class SnakePart extends Actor {
                 speedX = linearSpeed / dt * delta.x;
                 speedY = linearSpeed / dt * delta.y;
 
+                // Now that we know where we're going, let's see where it will put us with respect to our target
                 if (quadrant(this.getX(), this.getY(), targetX, targetY) != quadrant(this.getX()+speedX * Gdx.graphics.getDeltaTime(), this.getY()+speedY * Gdx.graphics.getDeltaTime(), targetX, targetY)) // the move will put us beyond the target
                     this.NextTarget();
             }
@@ -86,48 +84,7 @@ public class SnakePart extends Actor {
     public void NewTarget(int i) {
         targcoor = i;
     }
-/*
-    public void FollowHead(float SnakeHeadX, float SnakeHeadY) {
-        target.x = SnakeHeadX;
-        target.y = SnakeHeadY;
 
-        Vector2 delta = target.cpy();
-        delta.sub(snakeVector);
-        float dt = delta.len();
-
-        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
-
-        this.sprite.setRotation(speed.angle() - 90);
-    }
-
-    public void NoNewTarget(float SnakeHeadX, float SnakeHeadY) {
-        target.x = SnakeHeadX;
-        target.y = SnakeHeadY;
-
-        Vector2 delta = target.cpy();
-        delta.sub(snakeVector);
-        float dt = delta.len();
-
-        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
-
-        this.sprite.setRotation(speed.angle() - 90);
-    }
-
-
-        public boolean TargetReachedHead(){
-            Vector2 deltaHead = targetHead.cpy();
-            deltaHead.sub(snakeVector);
-            float deltaAngle = deltaHead.angle() - speedHead.angle();
-
-            if(Math.abs(deltaAngle) < 2) {
-                return false;
-            }else{
-                return true;
-            }
-        }
-    */
 
     public void NextTarget() {
         if (targcoor < SnakePlayground.coordinatesSnake.size - 1) {

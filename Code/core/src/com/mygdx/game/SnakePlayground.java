@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,20 +34,18 @@ public class SnakePlayground extends ApplicationAdapter {
     static public Array<Vector2> coordinatesSnake;
     private Array<SnakePart> snake;
 
-    Sprite snakeHead;
-    Sprite snakeBody;
 
     Apple apple;
 
     Vector2 TouchPos;
 
     ShapeRenderer shapeRenderer;
-    ScreenViewport viewport;
+    static public ScreenViewport viewport;
 
 
     @Override
     public void create() {
-        viewport = new ScreenViewport();
+         viewport = new ScreenViewport();
         shapeRenderer = new ShapeRenderer();
         stage = new Stage(viewport);
 
@@ -88,8 +87,6 @@ public class SnakePlayground extends ApplicationAdapter {
         stage.getBatch().draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         stage.getBatch().end();
 
-        Gdx.app.log("Array:",coordinatesSnake.toString());
-
 
         if (Gdx.input.justTouched()) {
             coordinatesSnake.get(coordinatesSnake.size - 1).set(snake.get(0).getX(),snake.get(0).getY()); // all parts of the body have to go to where the head is now
@@ -105,24 +102,18 @@ public class SnakePlayground extends ApplicationAdapter {
         boolean isHead = true;
 
         for (SnakePart snakePart : snake) {
-            if (!isHead) {
-                snakePart.Move(stage);
-            } else {
+            if (isHead) {
                 if (snakePart.getBounds().overlaps(apple.getBounds())) {
                     Gdx.app.log("SNAKE", "I touch the apple");
                     SnakePart snakePartBody = new SnakePart("snake_body", snake.get(snake.size - 1).getX(), snake.get(snake.size - 1).getY());
                     snake.add(snakePartBody);
                     apple.PlaceApple();
                 }
-                snakePart.Move(stage);
+            } else {
                 isHead = false;
-                /*if(snakePart.TargetReachedHead()){
-				}*/
             }
-
+            snakePart.Move(stage);
         }
-
-
 
 /*
 		// DRAWING LINE //
@@ -134,8 +125,7 @@ public class SnakePlayground extends ApplicationAdapter {
 			batch.end();
 */
 
-        stage.draw();
-
+            stage.draw();
     }
 
     @Override
