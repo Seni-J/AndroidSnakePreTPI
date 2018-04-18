@@ -25,6 +25,7 @@ public class SnakePart extends Actor {
     float moduloX;
     float moduloY;
     float frozen;
+    int previousQuadrant = 0;
     // End Variables //
 
     public boolean TargetReached;
@@ -73,7 +74,11 @@ public class SnakePart extends Actor {
             this.setX(moduloX);
             this.setY(moduloY);
 
-            //if(quadrant(this.getX(),this.getY()) == 2);
+            if(quadrant(this.getX(),this.getY()) != previousQuadrant){
+                TargetReached = true;
+            }else{
+                TargetReached = false;
+            }
         } else {
             frozen--;
         }
@@ -81,53 +86,15 @@ public class SnakePart extends Actor {
 
     public void NewTarget(int i) {
         targcoor = i;
-    }
-/*
-    public void FollowHead(float SnakeHeadX, float SnakeHeadY) {
-        target.x = SnakeHeadX;
-        target.y = SnakeHeadY;
-
-        Vector2 delta = target.cpy();
-        delta.sub(snakeVector);
-        float dt = delta.len();
-
-        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
-
-        this.sprite.setRotation(speed.angle() - 90);
+        previousQuadrant = quadrant(this.getX(),this.getY());
     }
 
-    public void NoNewTarget(float SnakeHeadX, float SnakeHeadY) {
-        target.x = SnakeHeadX;
-        target.y = SnakeHeadY;
-
-        Vector2 delta = target.cpy();
-        delta.sub(snakeVector);
-        float dt = delta.len();
-
-        speed.x = linearSpeed / dt * delta.x * Gdx.graphics.getDeltaTime();
-        speed.y = linearSpeed / dt * delta.y * Gdx.graphics.getDeltaTime();
-
-        this.sprite.setRotation(speed.angle() - 90);
-    }
-
-
-        public boolean TargetReachedHead(){
-            Vector2 deltaHead = targetHead.cpy();
-            deltaHead.sub(snakeVector);
-            float deltaAngle = deltaHead.angle() - speedHead.angle();
-
-            if(Math.abs(deltaAngle) < 2) {
-                return false;
-            }else{
-                return true;
-            }
-        }
-    */
 
     public void NextTarget(){
-        targcoor++;
-        NewTarget(targcoor);
+        if(SnakePlayground.coordinatesSnake.size < targcoor) {
+            targcoor++;
+            NewTarget(targcoor);
+        }
     }
 
     public Rectangle getBounds() {
@@ -151,16 +118,16 @@ public class SnakePart extends Actor {
     }
 
     public int quadrant(double x, double y) {
-        if(x > 0 && y > 0)
+        if(x > SnakePlayground.viewport.getScreenWidth()/2 && y > SnakePlayground.viewport.getScreenHeight()/2)
             return 1;
 
-        if(x < 0 && y > 0)
+        if(x < SnakePlayground.viewport.getScreenWidth()/2 && y > SnakePlayground.viewport.getScreenHeight()/2)
             return 2;
 
-        if(x < 0 && y < 0)
+        if(x < SnakePlayground.viewport.getScreenWidth()/2 && y < SnakePlayground.viewport.getScreenHeight()/2)
             return 3;
 
-        if(x > 0 && y < 0)
+        if(x > SnakePlayground.viewport.getScreenWidth()/2 && y < SnakePlayground.viewport.getScreenHeight()/2)
             return 4;
 
         return 0;

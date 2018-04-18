@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,20 +34,18 @@ public class SnakePlayground extends ApplicationAdapter {
     static public Array<Vector2> coordinatesSnake;
     private Array<SnakePart> snake;
 
-    Sprite snakeHead;
-    Sprite snakeBody;
 
     Apple apple;
 
     Vector2 TouchPos;
 
     ShapeRenderer shapeRenderer;
-    ScreenViewport viewport;
+    static public ScreenViewport viewport;
 
 
     @Override
     public void create() {
-        viewport = new ScreenViewport();
+         viewport = new ScreenViewport();
         shapeRenderer = new ShapeRenderer();
         stage = new Stage(viewport);
 
@@ -88,14 +87,13 @@ public class SnakePlayground extends ApplicationAdapter {
         stage.getBatch().draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         stage.getBatch().end();
 
-        Gdx.app.log("Array:",coordinatesSnake.toString());
-
 
         if (Gdx.input.justTouched()) {
-            coordinatesSnake.get(coordinatesSnake.size - 1).set(snake.get(0).getX(),snake.get(0).getY());
+            coordinatesSnake.get(coordinatesSnake.size - 1).set(snake.get(0).getX(), snake.get(0).getY());
             TouchPos = new Vector2(Gdx.input.getX(), stage.getHeight() - Gdx.input.getY());
             coordinatesSnake.add(TouchPos); // Array to add positions.
             snake.get(0).NewTarget(coordinatesSnake.size - 1);
+            snake.get(0).previousQuadrant = snake.get(0).quadrant(snake.get(0).getX(), snake.get(0).getY());
         }
 
 
@@ -103,13 +101,12 @@ public class SnakePlayground extends ApplicationAdapter {
 
         for (SnakePart snakePart : snake) {
             if (!isHead) {
-                snakePart.Move(stage);
-                //if (snakePart.TargetReached()) {
+                if (snakePart.TargetReached) {
                     snakePart.NextTarget();
-                    //snakePart.FollowHead(snakeHead.getX(),snakeHead.getY());
+                }else{
 
-                //}
-            } else {
+                }
+
                 if (snakePart.getBounds().overlaps(apple.getBounds())) {
                     Gdx.app.log("I touch the apple", "!!!");
                     SnakePart snakePartBody = new SnakePart("snake_body", snake.get(snake.size - 1).getX(), snake.get(snake.size - 1).getY());
@@ -117,15 +114,11 @@ public class SnakePlayground extends ApplicationAdapter {
                     apple.PlaceApple();
                     Gdx.app.log("snake index size", Integer.toString(snake.size));
                 }
-                snakePart.Move(stage);
+            } else {
                 isHead = false;
-                /*if(snakePart.TargetReachedHead()){
-				}*/
             }
-
+            snakePart.Move(stage);
         }
-
-
 
 /*
 		// DRAWING LINE //
@@ -137,8 +130,7 @@ public class SnakePlayground extends ApplicationAdapter {
 			batch.end();
 */
 
-        stage.draw();
-
+            stage.draw();
     }
 
     @Override
