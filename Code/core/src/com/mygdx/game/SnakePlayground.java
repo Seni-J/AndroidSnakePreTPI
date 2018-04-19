@@ -112,19 +112,21 @@ public class SnakePlayground extends ApplicationAdapter {
 
 
         boolean isHead = true;
-
+        boolean gotApple = false;
         //For each part of the snake
         for (SnakePart snakePart : snake) {
             if (isHead) {
                 //Check if the head hit the apple.
                 if (snake.get(0).getBounds().overlaps(apple.getBounds())) { // Only the head can eat apple.
                     SnakePart snakePartBody = new SnakePart("snake_body", snake.get(snake.size - 1).getX(), snake.get(snake.size - 1).getY());
+                    snakePartBody.NewTarget(snake.get(snake.size - 1).targcoor); // The new body part has the same target as the previous one.
                     snake.add(snakePartBody);
-                    snake.get(snake.size - 1).NewTarget(coordinatesSnake.size - 1);
                     stage.addActor(snakePartBody); //add as actor to show the bodypart.
                     score = score + 100; // scoring
                     scoreString = "score: " + score;
+                    gotApple = true;
                     apple.PlaceApple(); // new apple position.
+
                 }
                 //Check if snakePart isn't the head or the first part of the body.
                 if(snakePart != snake.get(1) && snakePart != snake.get(0)) {
@@ -142,6 +144,11 @@ public class SnakePlayground extends ApplicationAdapter {
                 isHead = false;
             }
             snakePart.Move(stage);
+        }
+        if(gotApple){
+            for (SnakePart P : snake){
+                P.linearSpeed += 10;
+            }
         }
 
 
