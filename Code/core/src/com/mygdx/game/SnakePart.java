@@ -31,10 +31,12 @@ public class SnakePart extends Actor {
 
     public SnakePart(String partType, float x, float y) {
         this.sprite = new Sprite(new Texture(partType + ".png"));
-        setBounds(x, y, this.sprite.getWidth(), this.sprite.getHeight());
-        snakeVector = new Vector2(this.sprite.getX(), this.sprite.getY());
-        frozen = 50;
         sprite.setScale(.5f);
+        this.sprite.setOriginCenter();
+        this.setBounds(x, y, this.sprite.getWidth(), this.sprite.getHeight());
+        this.setPosition(x,y);
+        snakeVector = new Vector2(this.sprite.getX(), this.sprite.getY());
+        frozen = 20;
         sprite.rotate(-90);
     }
 
@@ -64,6 +66,7 @@ public class SnakePart extends Actor {
 
             this.moveBy(speedX * Gdx.graphics.getDeltaTime(), speedY * Gdx.graphics.getDeltaTime());
 
+            // Modulo used so the snake reappears on the other side of the screen if he goes out of the screen.
             moduloX = this.getX() % stage.getWidth();
             moduloY = this.getY() % stage.getHeight();
             // Java keep the minus sign with modulo so we have to change it for a positive value instead of a negative value.
@@ -95,14 +98,15 @@ public class SnakePart extends Actor {
     }
 
     public Rectangle getBounds() {
-        bounds = new Rectangle(this.sprite.getX(), this.sprite.getY(), this.sprite.getWidth(), this.sprite.getHeight());
+        // Need the set the rectangle on the middle of the sprite.
+        bounds = new Rectangle(this.sprite.getX()+25, this.sprite.getY()+25, this.sprite.getWidth()/2, this.sprite.getHeight()/2);
         return bounds;
     }
 
     @Override
     protected void positionChanged() {
-        snakeVector = new Vector2(getX(), getY());
-        sprite.setPosition(getX(), getY());
+        snakeVector = new Vector2(this.getX(), this.getY());
+        sprite.setPosition(this.getX(), this.getY());
         super.positionChanged();
     }
 
@@ -114,6 +118,7 @@ public class SnakePart extends Actor {
         super.act(delta);
     }
 
+    //Quadrant used to check if target reached.
     public int quadrant(float x, float y, float tx, float ty) {
         if (x > tx)
             if (y > ty)
