@@ -63,7 +63,7 @@ public class SnakePlayground extends ApplicationAdapter {
         snake.insert(0, snakePartHead);
         snakePartHead.frozen = 0;
         snakePartHead.NewTarget(0);
-        SnakePart snakePartBody = new SnakePart("snake_body", 155, 420);
+        SnakePart snakePartBody = new SnakePart("snake_body", 175, 420);
         snakePartBody.frozen = 0;
         snakePartBody.NewTarget(0);
         snake.insert(1, snakePartBody);
@@ -96,24 +96,29 @@ public class SnakePlayground extends ApplicationAdapter {
             TouchPos = new Vector2(Gdx.input.getX(), stage.getHeight() - Gdx.input.getY());
             coordinatesSnake.add(TouchPos); // Array to add positions.
             snake.get(0).NewTarget(coordinatesSnake.size - 1);
+            dumpsnake("Touch");
         }
 
 
         boolean isHead = true;
+        boolean newapple = false;
 
         for (SnakePart snakePart : snake) {
             if (isHead) {
                 if (snakePart.getBounds().overlaps(apple.getBounds())) {
-                    Gdx.app.log("SNAKE", "I touch the apple");
                     SnakePart snakePartBody = new SnakePart("snake_body", snake.get(snake.size - 1).getX(), snake.get(snake.size - 1).getY());
+                    snakePartBody.NewTarget(snake.get(snake.size-1).targcoor); // new part has same target as previous
                     snake.add(snakePartBody);
+                    stage.addActor(snakePartBody);
                     apple.PlaceApple();
+                    newapple=true;
                 }
             } else {
                 isHead = false;
             }
             snakePart.Move(stage);
         }
+        if (newapple) dumpsnake("I touch the apple");
 
 /*
 		// DRAWING LINE //
@@ -128,6 +133,12 @@ public class SnakePlayground extends ApplicationAdapter {
             stage.draw();
     }
 
+    private void dumpsnake(String message)
+    {
+        Gdx.app.log("SNAKE",">>>>>>>>"+message);
+        for (SnakePart part : snake)
+            Gdx.app.log("SNAKE",part.toString());
+    }
     @Override
     public void dispose() {
         batch.dispose();

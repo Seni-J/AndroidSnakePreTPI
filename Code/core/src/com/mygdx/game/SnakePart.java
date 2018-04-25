@@ -33,7 +33,7 @@ public class SnakePart extends Actor {
         this.sprite = new Sprite(new Texture(partType + ".png"));
         setBounds(x, y, this.sprite.getWidth(), this.sprite.getHeight());
         snakeVector = new Vector2(this.sprite.getX(), this.sprite.getY());
-        frozen = 50;
+        frozen = 10;
         sprite.setScale(.5f);
         sprite.rotate(-90);
     }
@@ -104,6 +104,12 @@ public class SnakePart extends Actor {
         snakeVector = new Vector2(getX(), getY());
         sprite.setPosition(getX(), getY());
         super.positionChanged();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ID: "+System.identityHashCode(this)+"\tis at["+Math.round(sprite.getX())+","+Math.round(sprite.getY())+"]\tand is going to "+targcoor;
     }
 
     public void draw(Batch batch, float parentAlpha) {
